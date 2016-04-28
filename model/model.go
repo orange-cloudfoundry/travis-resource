@@ -15,19 +15,23 @@ type OutParams struct {
 type Version struct {
 	BuildNumber int `json:"build"`
 }
+type VersionString struct {
+	BuildNumber string `json:"build"`
+}
 type Metadata struct {
 	Name  string      `json:"name"`
 	Value interface{} `json:"value"`
 }
 type CheckRequest struct {
 	Source  DefaultSource  `json:"source"`
-	Version Version `json:"version"`
+	Version Version        `json:"version"`
 }
 type InRequest struct {
-	CheckRequest
+	Source  DefaultSource  `json:"source"`
+	Version VersionString  `json:"version"`
 }
 type OutRequest struct {
-	CheckRequest
+	InRequest
 	OutParams OutParams `json:"params"`
 }
 type CheckResponse []Version

@@ -27,7 +27,7 @@ func main() {
 	travisClient, err := common.MakeTravisClient(request.Source)
 	common.FatalIf("failed to create travis client", err)
 	builds, jobs, commits, _, err := travisClient.Builds.ListFromRepository(request.Source.Repository, &travis.BuildListOptions{
-		Number: strconv.Itoa(request.Version.BuildNumber),
+		Number: request.Version.BuildNumber,
 	})
 	common.FatalIf("can't get build", err)
 	if len(builds) == 0 {
@@ -47,7 +47,8 @@ func main() {
 	listBuildJson, err := json.MarshalIndent(listBuild, "", "\t")
 	common.FatalIf("error during marshall", err)
 	file.Write(listBuildJson)
-
-	response := model.InResponse{common.GetMetadatasFromBuild(build), model.Version{request.Version.BuildNumber}}
+	buildNumberInt, err := strconv.Atoi(request.Version.BuildNumber)
+	common.FatalIf("build number invalid", err)
+	response := model.InResponse{common.GetMetadatasFromBuild(build), model.Version{buildNumberInt}}
 	json.NewEncoder(os.Stdout).Encode(response)
 }
