@@ -10,9 +10,6 @@ BUILD_DIR=$PWD/built-resource
 go get -d github.com/ArthurHlt/travis-resource
 cd $GOPATH/src/github.com/ArthurHlt/travis-resource
 
-export GOPATH=${PWD}/Godeps/_workspace:$GOPATH
-export PATH=${PWD}/Godeps/_workspace/bin:$PATH
-
 #go install github.com/onsi/ginkgo/ginkgo
 
 #CGO_ENABLED=1 ginkgo -race -r -p "$@"
