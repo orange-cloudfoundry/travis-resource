@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"github.com/ArthurHlt/travis-resource/common"
 	"github.com/ArthurHlt/travis-resource/travis"
+	"path/filepath"
 )
 
 func main() {
@@ -14,8 +15,12 @@ func main() {
 		common.FatalIf("error in command argument", errors.New("you must pass a folder as a first argument"))
 	}
 	destinationFolder := os.Args[1]
+	err := os.MkdirAll(destinationFolder, 0755)
+	if err != nil {
+		common.FatalIf("creating destination", err)
+	}
 	var request model.InRequest
-	err := json.NewDecoder(os.Stdin).Decode(&request)
+	err = json.NewDecoder(os.Stdin).Decode(&request)
 	common.FatalIf("failed to read request ", err)
 	if request.Source.Repository == "" {
 		common.FatalIf("can't get build", errors.New("there is no repository set"))
@@ -36,7 +41,7 @@ func main() {
 		Commits: commits,
 	}
 
-	file, err := os.Create(destinationFolder + "/" + common.FILENAME_BUILD_INFO)
+	file, err := os.Create(filepath.Join(destinationFolder, common.FILENAME_BUILD_INFO))
 	common.FatalIf("can't create file", err)
 	defer file.Close()
 

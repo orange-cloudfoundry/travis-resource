@@ -8,6 +8,7 @@ import (
 	"errors"
 	"github.com/ArthurHlt/travis-resource/travis"
 	"strconv"
+	"path/filepath"
 )
 
 func main() {
@@ -24,7 +25,7 @@ func main() {
 	travisClient, err := common.MakeTravisClient(request.Source)
 
 	common.FatalIf("failed to create travis client", err)
-	file, err := os.Open(destinationFolder + "/" + common.FILENAME_BUILD_INFO)
+	file, err := os.Open(filepath.Join(destinationFolder, common.FILENAME_BUILD_INFO))
 	common.FatalIf("can't open file", err)
 	defer file.Close()
 
