@@ -11,6 +11,8 @@ Track travis builds and can trigger them.
 
 * `check-all-builds`: *Optional.* If set to `true` it will retrieve all builds (not just succeeded ones). Defaults to `false`.
 
+* `pro`: *Optional.* If set to `true` it will use travis pro api. Defaults to `false`.
+
 * `github-token`: *if `travis-token` it becomes unnecessary* A github token to authenticate to travis.
 
 * `travis-token`: *if `github-token` it becomes unnecessary* A travis token to authenticate to travis.
@@ -77,6 +79,8 @@ By default it will restart the build give by the file `build-info.json`.
 * `branch`: *Optional.* A branch associated to a repository to restart (It will restart the last build found in this branch). **Note:** if `build` is set this parameter will be ignored
 
 * `repository`: *Optional.* The repository where we can found the build number in travis. If it's not set `build` parameter will be associated to the repository given in source configuration
+
+* `unwait-build`: *Optional.* Don't wait travis to finish the build. Default to `false`
 
 ## Example
 

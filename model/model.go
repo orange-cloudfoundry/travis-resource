@@ -6,11 +6,13 @@ type DefaultSource struct {
 	GithubToken    string   `json:"github-token"`
 	TravisToken    string   `json:"travis-token"`
 	CheckAllBuilds bool     `json:"check-all-builds"`
+	Pro            bool     `json:"pro"`
 }
 type OutParams struct {
-	Build      interface{}  `json:"build"`
-	Branch     string       `json:"branch"`
-	Repository string       `json:"repository"`
+	Build       interface{}  `json:"build"`
+	Branch      string       `json:"branch"`
+	Repository  string       `json:"repository"`
+	UnWaitBuild bool         `json:"unwait-build"`
 }
 type Version struct {
 	BuildNumber string `json:"build"`

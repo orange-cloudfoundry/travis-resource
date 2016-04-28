@@ -8,6 +8,7 @@ import (
 	"errors"
 	"github.com/ArthurHlt/travis-resource/travis"
 	"strconv"
+	"time"
 )
 
 func main() {
@@ -48,9 +49,35 @@ func main() {
 	}
 
 	travisClient.Builds.Restart(build.Id)
-
+	if !request.OutParams.UnWaitBuild {
+		waitBuild(travisClient, repository, build.Number, request.Source.Pro)
+	}
 	build, err = travisClient.Builds.GetFirstBuildFromBuildNumber(repository, build.Number)
 	common.FatalIf("can't get build after restart", err)
 	response := model.InResponse{common.GetMetadatasFromBuild(build), model.Version{build.Number}}
 	json.NewEncoder(os.Stdout).Encode(response)
+}
+func waitBuild(travisClient *travis.Client, repository, buildNumber string, pro bool) {
+	var build travis.Build
+	var err error
+	for {
+		build, err = travisClient.Builds.GetFirstBuildFromBuildNumber(repository, buildNumber)
+		common.FatalIf("can't get build after restart", err)
+		if !stringInSlice(build.State, travis.RUNNING_STATE) {
+			break
+		}
+		time.Sleep(5 * time.Second)
+	}
+	if build.State != travis.SUCCEEDED_STATE {
+		common.FatalIf("Build '" + build.Number + "' in errored, see",
+			errors.New(common.GetTravisUrl(pro) + repository + "/builds/" + build.Id))
+	}
+}
+func stringInSlice(str string, list []string) bool {
+	for _, v := range list {
+		if v == str {
+			return true
+		}
+	}
+	return false
 }

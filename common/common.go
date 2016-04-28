@@ -31,9 +31,9 @@ func MakeTravisClient(request model.DefaultSource) (*travis.Client, error) {
 	}
 	var travisClient *travis.Client
 	if request.TravisToken != "" {
-		travisClient = travis.NewClient(travis.TRAVIS_API_DEFAULT_URL, request.TravisToken, httpClient)
+		travisClient = travis.NewClient(GetTravisUrl(request.Pro), request.TravisToken, httpClient)
 	} else {
-		travisClient = travis.NewClient(travis.TRAVIS_API_DEFAULT_URL, "", httpClient)
+		travisClient = travis.NewClient(GetTravisUrl(request.Pro), "", httpClient)
 		// authWithGithubClient.IsAuthenticated() will return false
 		_, _, err := travisClient.Authentication.UsingGithubToken(request.GithubToken)
 		if err != nil {
@@ -47,6 +47,12 @@ func GetMetadatasFromBuild(build travis.Build) ([]model.Metadata) {
 	metadatas = append(metadatas, model.Metadata{"travis_succeeded", strconv.FormatBool(build.State == travis.SUCCEEDED_STATE)})
 	metadatas = append(metadatas, model.Metadata{"travis_build_state", build.State})
 	return metadatas
+}
+func GetTravisUrl(pro bool) (string) {
+	if pro {
+		return travis.TRAVIS_API_PRO_URL
+	}
+	return travis.TRAVIS_API_DEFAULT_URL
 }
 func FatalIf(doing string, err error) {
 	if err != nil {
