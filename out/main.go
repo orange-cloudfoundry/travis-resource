@@ -8,6 +8,8 @@ import (
 	"errors"
 	"github.com/ArthurHlt/travis-resource/travis"
 	"strconv"
+	"fmt"
+	"reflect"
 )
 
 func main() {
@@ -33,7 +35,9 @@ func main() {
 	if buildParamString, ok := request.OutParams.Build.(string); ok {
 		buildParam = buildParamString
 	}
-	common.FatalIf("build number", errors.New(buildParam))
+	info, err := fmt.Printf("%s %s %v", buildParam, reflect.TypeOf(request.OutParams.Build), request.OutParams.Build)
+	common.FatalIf("err", err);
+	common.FatalIf("build number", errors.New(info));
 	if buildParam == "latest" || (request.OutParams.Repository != "" && request.OutParams.Build == "" && request.OutParams.Branch == "") {
 		build, err = travisClient.Builds.GetFirstFinishedBuild(repository)
 		common.FatalIf("can't get build", err)
