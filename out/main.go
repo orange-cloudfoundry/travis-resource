@@ -43,17 +43,14 @@ func main() {
 		build, err = travisClient.Builds.GetFirstFinishedBuildWithBranch(repository, request.OutParams.Branch)
 		common.FatalIf("can't get build", err)
 	} else {
-		builds, _, _, _, err := travisClient.Builds.ListFromRepository(request.Source.Repository, &travis.BuildListOptions{
-			Number: request.Version.BuildNumber,
-		})
+		build, err = travisClient.Builds.GetFirstBuildFromBuildNumber(repository, request.Version.BuildNumber)
 		common.FatalIf("can't get build", err)
-		if len(builds) == 0 {
-			common.FatalIf("can't get build", errors.New("there is no builds in travis"))
-		}
-		build = builds[0]
 	}
 
 	travisClient.Builds.Restart(build.Id)
+
+	build, err = travisClient.Builds.GetFirstBuildFromBuildNumber(repository, build.Number)
+	common.FatalIf("can't get build after restart", err)
 	response := model.InResponse{common.GetMetadatasFromBuild(build), model.Version{build.Number}}
 	json.NewEncoder(os.Stdout).Encode(response)
 }
