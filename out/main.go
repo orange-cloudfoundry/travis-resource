@@ -35,7 +35,7 @@ func main() {
 	if buildParamString, ok := request.OutParams.Build.(string); ok {
 		buildParam = buildParamString
 	}
-	info, err := fmt.Printf("%s %s %v", buildParam, reflect.TypeOf(request.OutParams.Build), request.OutParams.Build)
+	info := fmt.Sprintf("%s %s %v", buildParam, reflect.TypeOf(request.OutParams.Build), request.OutParams.Build)
 	common.FatalIf("err", err);
 	common.FatalIf("build number", errors.New(info));
 	if buildParam == "latest" || (request.OutParams.Repository != "" && request.OutParams.Build == "" && request.OutParams.Branch == "") {
