@@ -33,7 +33,7 @@ func main() {
 	if buildParamString, ok := request.OutParams.Build.(string); ok {
 		buildParam = buildParamString
 	}
-
+	common.FatalIf("build param", errors.New(buildParam))
 	if buildParam == "latest" || (request.OutParams.Repository != "" && request.OutParams.Build == "" && request.OutParams.Branch == "") {
 		build, err = travisClient.Builds.GetFirstFinishedBuild(repository)
 		common.FatalIf("can't get build", err)
