@@ -43,7 +43,11 @@ func main() {
 	listBuildJson, err := json.MarshalIndent(listBuild, "", "\t")
 	common.FatalIf("error during marshall", err)
 	file.Write(listBuildJson)
-	response := model.InResponse{common.GetMetadatasFromBuild(build), model.Version{request.Version.BuildNumber}}
+	response := model.InResponse{
+		Metadata: common.GetMetadatasFromBuild(build),
+		Version: model.Version{request.Version.BuildNumber},
+	}
 	json.NewEncoder(os.Stdout).Encode(response)
-	common.FatalIf("try to debug", errors.New(""))
+	data, err := json.MarshalIndent(response, "", "\t")
+	common.FatalIf("try to debug", errors.New(string(data)))
 }
