@@ -8,14 +8,10 @@ import (
 	"errors"
 	"github.com/ArthurHlt/travis-resource/travis"
 	"strconv"
-	"path/filepath"
 )
 
 func main() {
-	if len(os.Args) <= 1 {
-		common.FatalIf("error in command argument", errors.New("you must pass a folder as a first argument"))
-	}
-	destinationFolder := os.Args[1]
+
 	var request model.OutRequest
 	err := json.NewDecoder(os.Stdin).Decode(&request)
 	common.FatalIf("failed to read request", err)
@@ -23,17 +19,9 @@ func main() {
 		common.FatalIf("can't get build", errors.New("there is no repository set"))
 	}
 	travisClient, err := common.MakeTravisClient(request.Source)
-
 	common.FatalIf("failed to create travis client", err)
-	file, err := os.Open(filepath.Join(destinationFolder, common.FILENAME_BUILD_INFO))
-	common.FatalIf("can't open file", err)
-	defer file.Close()
 
-	var listBuilds travis.ListBuildsResponse
-	err = json.NewDecoder(file).Decode(&listBuilds)
-	common.FatalIf("failed to read builds informations", err)
-
-	build := listBuilds.Builds[0]
+	var build travis.Build
 	repository := request.Source.Repository
 	if request.OutParams.Repository != "" {
 		repository = request.OutParams.Repository
@@ -54,6 +42,15 @@ func main() {
 	} else if request.OutParams.Branch != "" {
 		build, err = travisClient.Builds.GetFirstFinishedBuildWithBranch(repository, request.OutParams.Branch)
 		common.FatalIf("can't get build", err)
+	} else {
+		builds, _, _, _, err := travisClient.Builds.ListFromRepository(request.Source.Repository, &travis.BuildListOptions{
+			Number: request.Version.BuildNumber,
+		})
+		common.FatalIf("can't get build", err)
+		if len(builds) == 0 {
+			common.FatalIf("can't get build", errors.New("there is no builds in travis"))
+		}
+		build = builds[0]
 	}
 
 	travisClient.Builds.Restart(build.Id)
