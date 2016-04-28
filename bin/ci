@@ -7,7 +7,7 @@ export GOPATH=$PWD/gopath
 export PATH=$GOPATH/bin:$PATH
 mkdir $PWD/built-resource
 BUILD_DIR=$PWD/built-resource
-go get github.com/ArthurHlt/travis-resource
+go get -d github.com/ArthurHlt/travis-resource
 cd $GOPATH/src/github.com/ArthurHlt/travis-resource
 
 export GOPATH=${PWD}/Godeps/_workspace:$GOPATH
