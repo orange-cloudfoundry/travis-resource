@@ -28,7 +28,7 @@ func main() {
 	}
 	buildParam := ""
 	if buildParamNumber, ok := request.OutParams.Build.(float64); ok {
-		buildParam = strconv.FormatFloat(buildParamNumber, 'f', 6, 64)
+		buildParam = strconv.FormatFloat(buildParamNumber, 'f', 0, 64)
 	}
 	if buildParamString, ok := request.OutParams.Build.(string); ok {
 		buildParam = buildParamString
