@@ -70,7 +70,7 @@ func waitBuild(travisClient *travis.Client, repository, buildNumber string, pro 
 	}
 	if build.State != travis.SUCCEEDED_STATE {
 		common.FatalIf("Build '" + build.Number + "' in errored, see",
-			errors.New(common.GetTravisUrl(pro) + repository + "/builds/" + build.Id))
+			errors.New(common.GetTravisUrl(pro) + repository + "/builds/" + strconv.Itoa(int(build.Id))))
 	}
 }
 func stringInSlice(str string, list []string) bool {
