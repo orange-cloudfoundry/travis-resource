@@ -8,6 +8,7 @@ import (
 	"github.com/ArthurHlt/travis-resource/common"
 	"github.com/ArthurHlt/travis-resource/travis"
 	"strconv"
+	"io/ioutil"
 )
 
 func main() {
@@ -16,8 +17,10 @@ func main() {
 	}
 	destinationFolder := os.Args[1]
 	var request model.InRequest
-	err := json.NewDecoder(os.Stdin).Decode(&request)
+	data, err := ioutil.ReadAll(os.Stdin)
 	common.FatalIf("failed to read request", err)
+	err = json.NewDecoder(os.Stdin).Decode(&request)
+	common.FatalIf("failed to read request " + string(data), err)
 	if request.Source.Repository == "" {
 		common.FatalIf("can't get build", errors.New("there is no repository set"))
 	}
