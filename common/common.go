@@ -44,20 +44,6 @@ func MakeTravisClient(request model.DefaultSource) (*travis.Client, error) {
 }
 func GetMetadatasFromBuild(build travis.Build) ([]model.Metadata) {
 	metadatas := make([]model.Metadata, 0)
-	metadatas = append(metadatas, model.Metadata{"travis_id", strconv.Itoa(int(build.Id))})
-	metadatas = append(metadatas, model.Metadata{"travis_repository_id", strconv.Itoa(int(build.RepositoryId))})
-	metadatas = append(metadatas, model.Metadata{"travis_slug", build.Slug})
-	metadatas = append(metadatas, model.Metadata{"travis_commit_id", strconv.Itoa(int(build.CommitId))})
-	metadatas = append(metadatas, model.Metadata{"travis_number", build.Number})
-	metadatas = append(metadatas, model.Metadata{"travis_pull_request", strconv.FormatBool(build.PullRequest)})
-	metadatas = append(metadatas, model.Metadata{"travis_pull_request_title", build.PullRequestTitle})
-	metadatas = append(metadatas, model.Metadata{"travis_pull_request_number", strconv.Itoa(int(build.PullRequestNumber))})
-	metadatas = append(metadatas, model.Metadata{"travis_state", build.State})
-	metadatas = append(metadatas, model.Metadata{"travis_started_at", build.StartedAt})
-	metadatas = append(metadatas, model.Metadata{"travis_finished_at", build.FinishedAt})
-	metadatas = append(metadatas, model.Metadata{"travis_duration", strconv.Itoa(int(build.Duration))})
-	metadatas = append(metadatas, model.Metadata{"travis_after_number", strconv.Itoa(int(build.AfterNumber))})
-	metadatas = append(metadatas, model.Metadata{"travis_event_type", build.EventType})
 	metadatas = append(metadatas, model.Metadata{"travis_succeeded", strconv.FormatBool(build.State == travis.SUCCEEDED_STATE)})
 	return metadatas
 }

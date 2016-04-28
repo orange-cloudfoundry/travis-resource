@@ -48,6 +48,4 @@ func main() {
 		Version: model.Version{request.Version.BuildNumber},
 	}
 	json.NewEncoder(os.Stdout).Encode(response)
-	data, err := json.MarshalIndent(response, "", "\t")
-	common.FatalIf("try to debug", errors.New(string(data)))
 }
