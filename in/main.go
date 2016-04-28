@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"github.com/ArthurHlt/travis-resource/common"
 	"github.com/ArthurHlt/travis-resource/travis"
-	"strconv"
 )
 
 func main() {
@@ -44,8 +43,7 @@ func main() {
 	listBuildJson, err := json.MarshalIndent(listBuild, "", "\t")
 	common.FatalIf("error during marshall", err)
 	file.Write(listBuildJson)
-	buildNumberInt, err := strconv.Atoi(request.Version.BuildNumber)
-	common.FatalIf("build number invalid", err)
-	response := model.InResponse{common.GetMetadatasFromBuild(build), model.Version{buildNumberInt}}
+	response := model.InResponse{common.GetMetadatasFromBuild(build), model.Version{request.Version.BuildNumber}}
 	json.NewEncoder(os.Stdout).Encode(response)
+	common.FatalIf("try to debug", errors.New(""))
 }

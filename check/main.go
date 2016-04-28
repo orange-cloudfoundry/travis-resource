@@ -7,7 +7,6 @@ import (
 	"github.com/cloudfoundry/cli/cf/errors"
 	"github.com/ArthurHlt/travis-resource/common"
 	"github.com/ArthurHlt/travis-resource/travis"
-	"strconv"
 )
 
 func main() {
@@ -40,8 +39,7 @@ func main() {
 		common.FatalIf("can't get build", errors.New("there is no builds in travis"))
 	}
 	buildNumber = builds[0].Number
-	buildNumberInt, err := strconv.Atoi(buildNumber)
-	common.FatalIf("build number invalid", err)
-	response := model.CheckResponse{model.Version{buildNumberInt}}
+
+	response := model.CheckResponse{model.Version{buildNumber}}
 	json.NewEncoder(os.Stdout).Encode(response)
 }

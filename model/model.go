@@ -13,14 +13,12 @@ type OutParams struct {
 	Repository string       `json:"repository"`
 }
 type Version struct {
-	BuildNumber int `json:"build"`
-}
-type VersionString struct {
 	BuildNumber string `json:"build"`
 }
+
 type Metadata struct {
-	Name  string      `json:"name"`
-	Value interface{} `json:"value"`
+	Name  string `json:"name"`
+	Value string `json:"value"`
 }
 type CheckRequest struct {
 	Source  DefaultSource  `json:"source"`
@@ -28,7 +26,7 @@ type CheckRequest struct {
 }
 type InRequest struct {
 	Source  DefaultSource  `json:"source"`
-	Version VersionString  `json:"version"`
+	Version Version        `json:"version"`
 }
 type OutRequest struct {
 	InRequest
