@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"github.com/ArthurHlt/travis-resource/common"
 	"github.com/ArthurHlt/travis-resource/travis"
+	"strconv"
 )
 
 func main() {
@@ -23,7 +24,7 @@ func main() {
 	travisClient, err := common.MakeTravisClient(request.Source)
 	common.FatalIf("failed to create travis client", err)
 	builds, jobs, commits, _, err := travisClient.Builds.ListFromRepository(request.Source.Repository, &travis.BuildListOptions{
-		Number: request.Version.BuildNumber,
+		Number: strconv.Itoa(request.Version.BuildNumber),
 	})
 	common.FatalIf("can't get build", err)
 	if len(builds) == 0 {

@@ -5,18 +5,18 @@ type DefaultSource struct {
 	Branch         string   `json:"branch"`
 	GithubToken    string   `json:"github-token"`
 	TravisToken    string   `json:"travis-token"`
-	CheckAllBuilds bool   `json:"check-all-builds"`
+	CheckAllBuilds bool     `json:"check-all-builds"`
 }
 type OutParams struct {
-	Build      string  `json:"build"`
-	Branch     string  `json:"branch"`
-	Repository string  `json:"repository"`
+	Build      interface{}  `json:"build"`
+	Branch     string       `json:"branch"`
+	Repository string       `json:"repository"`
 }
 type Version struct {
-	BuildNumber string `json:"build"`
+	BuildNumber int `json:"build"`
 }
 type Metadata struct {
-	Name  string  `json:"name"`
+	Name  string      `json:"name"`
 	Value interface{} `json:"value"`
 }
 type CheckRequest struct {
