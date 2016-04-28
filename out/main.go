@@ -56,8 +56,6 @@ func main() {
 	}
 
 	travisClient.Builds.Restart(build.Id)
-	buildNumberInt, err := strconv.Atoi(build.Number)
-	common.FatalIf("build number invalid", err)
-	response := model.InResponse{common.GetMetadatasFromBuild(build), model.Version{buildNumberInt}}
+	response := model.InResponse{common.GetMetadatasFromBuild(build), model.Version{build.Number}}
 	json.NewEncoder(os.Stdout).Encode(response)
 }
