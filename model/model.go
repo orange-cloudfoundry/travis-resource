@@ -8,7 +8,7 @@ type DefaultSource struct {
 	CheckAllBuilds bool     `json:"check-all-builds"`
 }
 type OutParams struct {
-	Build      interface{}  `json:"build"`
+	Build      string  `json:"build"`
 	Branch     string       `json:"branch"`
 	Repository string       `json:"repository"`
 }
