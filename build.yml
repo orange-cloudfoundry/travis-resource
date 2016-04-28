@@ -9,6 +9,7 @@ image_resource:
 
 inputs:
 - name: travis-resource-git
-
+output:
+- name: built-resource
 run:
   path: travis-resource-git/bin/ci

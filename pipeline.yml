@@ -22,4 +22,4 @@ jobs:
       file: travis-resource-git/build.yml
     - put: travis-resource-image
       params:
-        build: travis-resource-git/built-resource
+        build: built-resource/
