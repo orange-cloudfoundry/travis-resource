@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/ArthurHlt/travis-resource/travis"
+	"strconv"
 )
 
 func main() {
@@ -25,12 +26,19 @@ func main() {
 	if request.OutParams.Repository != "" {
 		repository = request.OutParams.Repository
 	}
-
-	if request.OutParams.Build == "latest" || (request.OutParams.Repository != "" && request.OutParams.Build == "" && request.OutParams.Branch == "") {
+	buildParam := ""
+	if buildParamInt, ok := request.OutParams.Build.(int); ok {
+		buildParam = strconv.Itoa(buildParamInt)
+	}
+	if buildParamString, ok := request.OutParams.Build.(string); ok {
+		buildParam = buildParamString
+	}
+	common.FatalIf("build number", errors.New(buildParam))
+	if buildParam == "latest" || (request.OutParams.Repository != "" && request.OutParams.Build == "" && request.OutParams.Branch == "") {
 		build, err = travisClient.Builds.GetFirstFinishedBuild(repository)
 		common.FatalIf("can't get build", err)
-	} else if request.OutParams.Build != "" {
-		build, err = travisClient.Builds.GetFirstBuildFromBuildNumber(repository, request.OutParams.Build)
+	} else if buildParam != "" {
+		build, err = travisClient.Builds.GetFirstBuildFromBuildNumber(repository, buildParam)
 		common.FatalIf("can't get build", err)
 	} else if request.OutParams.Branch != "" {
 		build, err = travisClient.Builds.GetFirstFinishedBuildWithBranch(repository, request.OutParams.Branch)
