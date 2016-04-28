@@ -45,6 +45,7 @@ func MakeTravisClient(request model.DefaultSource) (*travis.Client, error) {
 func GetMetadatasFromBuild(build travis.Build) ([]model.Metadata) {
 	metadatas := make([]model.Metadata, 0)
 	metadatas = append(metadatas, model.Metadata{"travis_succeeded", strconv.FormatBool(build.State == travis.SUCCEEDED_STATE)})
+	metadatas = append(metadatas, model.Metadata{"travis_build_state", build.State})
 	return metadatas
 }
 func FatalIf(doing string, err error) {
