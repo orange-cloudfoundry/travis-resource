@@ -1,0 +1,25 @@
+resources:
+  - name: travis-resource-git
+    type: git
+    source:
+      uri: https://github.com/ArthurHlt/travis-resource.git
+      branch: master
+  - name: travis-resource-image
+    type: docker-image
+    source:
+      email: {{docker-hub-email}}
+      username: {{docker-hub-username}}
+      password: {{docker-hub-password}}
+      repository: {{docker-hub-image}}
+jobs:
+  - name: publish-db-dumper-concourse
+    public: true
+    serial: true
+    plan:
+    - get: travis-resource-git
+      trigger: true
+    - task: build-resource
+      file: travis-resource-git/build.yml
+    - put: travis-resource-image
+      params:
+        build: travis-resource-git/built-resource
