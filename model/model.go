@@ -7,6 +7,7 @@ type DefaultSource struct {
 	TravisToken    string   `json:"travis-token"`
 	CheckAllBuilds bool     `json:"check-all-builds"`
 	Pro            bool     `json:"pro"`
+	Url            bool     `json:"travis-url"`
 }
 type OutParams struct {
 	Build       interface{}  `json:"build"`

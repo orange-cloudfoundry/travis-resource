@@ -9,6 +9,7 @@ import (
 	"time"
 	"net"
 	"strconv"
+	"strings"
 )
 
 var FILENAME_BUILD_INFO string = "build-info.json"
@@ -30,10 +31,16 @@ func MakeTravisClient(request model.DefaultSource) (*travis.Client, error) {
 		Transport: baseTransport,
 	}
 	var travisClient *travis.Client
-	if request.TravisToken != "" {
-		travisClient = travis.NewClient(GetTravisUrl(request.Pro), request.TravisToken, httpClient)
+	var travisUrl string
+	if request.Url != "" {
+		travisUrl = request.Url
 	} else {
-		travisClient = travis.NewClient(GetTravisUrl(request.Pro), "", httpClient)
+		travisUrl = GetTravisUrl(request.Pro)
+	}
+	if request.TravisToken != "" {
+		travisClient = travis.NewClient(travisUrl, request.TravisToken, httpClient)
+	} else {
+		travisClient = travis.NewClient(travisUrl, "", httpClient)
 		// authWithGithubClient.IsAuthenticated() will return false
 		_, _, err := travisClient.Authentication.UsingGithubToken(request.GithubToken)
 		if err != nil {
@@ -53,6 +60,9 @@ func GetTravisUrl(pro bool) (string) {
 		return travis.TRAVIS_API_PRO_URL
 	}
 	return travis.TRAVIS_API_DEFAULT_URL
+}
+func GetTravisDashboardUrl(url string) string {
+	return strings.Replace(url, "api.", "", 1)
 }
 func FatalIf(doing string, err error) {
 	if err != nil {

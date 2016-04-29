@@ -13,6 +13,8 @@ Track travis builds and can trigger them.
 
 * `pro`: *Optional.* If set to `true` it will use travis pro api. Defaults to `false`.
 
+* `travis-url`: *Optional.* If set it will override default travis api with this one.
+
 * `github-token`: *if `travis-token` it becomes unnecessary* A github token to authenticate to travis.
 
 * `travis-token`: *if `github-token` it becomes unnecessary* A travis token to authenticate to travis.
@@ -80,7 +82,7 @@ By default it will restart the build give by the file `build-info.json`.
 
 * `repository`: *Optional.* The repository where we can found the build number in travis. If it's not set `build` parameter will be associated to the repository given in source configuration
 
-* `unwait-build`: *Optional.* Don't wait travis to finish the build. Default to `false`
+* `unwait-build`: *Optional.* Don't wait travis to finish the build. Defaults to `false`
 
 ## Example
 

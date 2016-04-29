@@ -50,16 +50,23 @@ func main() {
 
 	travisClient.Builds.Restart(build.Id)
 	if !request.OutParams.UnWaitBuild {
-		waitBuild(travisClient, repository, build.Number, request.Source.Pro)
+		waitBuild(travisClient, repository, build.Number, request)
 	}
 	build, err = travisClient.Builds.GetFirstBuildFromBuildNumber(repository, build.Number)
 	common.FatalIf("can't get build after restart", err)
 	response := model.InResponse{common.GetMetadatasFromBuild(build), model.Version{build.Number}}
 	json.NewEncoder(os.Stdout).Encode(response)
 }
-func waitBuild(travisClient *travis.Client, repository, buildNumber string, pro bool) {
+func waitBuild(travisClient *travis.Client, repository, buildNumber string, request model.OutRequest) {
 	var build travis.Build
 	var err error
+	var travisUrl string
+	if request.Source.Url != "" {
+		travisUrl = request.Source.Url
+	} else {
+		travisUrl = common.GetTravisUrl(request.Source.Pro)
+	}
+	travisUrl = common.GetTravisDashboardUrl(travisUrl)
 	for {
 		build, err = travisClient.Builds.GetFirstBuildFromBuildNumber(repository, buildNumber)
 		common.FatalIf("can't get build after restart", err)
@@ -70,7 +77,7 @@ func waitBuild(travisClient *travis.Client, repository, buildNumber string, pro 
 	}
 	if build.State != travis.SUCCEEDED_STATE {
 		common.FatalIf("Build '" + build.Number + "' in errored, see",
-			errors.New(common.GetTravisUrl(pro) + repository + "/builds/" + strconv.Itoa(int(build.Id))))
+			errors.New(travisUrl + repository + "/builds/" + strconv.Itoa(int(build.Id))))
 	}
 }
 func stringInSlice(str string, list []string) bool {
