@@ -5,4 +5,4 @@ go get github.com/golang/mock/mockgen
 mkdir $PWD/travis/mock_travis
 mockgen -destination $PWD/travis/mock_travis/mock_travis.go \
     github.com/Orange-OpenSource/travis-resource/travis \
-    BuildsInterface,JobsInterface
+    AuthenticationInterface,RepositoriesInterface,BuildsInterface,JobsInterface,BranchesInterface,LogsInterface,CommitsInterface,RequestsInterface,UsersInterface
