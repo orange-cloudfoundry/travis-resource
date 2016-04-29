@@ -82,7 +82,7 @@ By default it will restart the build give by the file `build-info.json`.
 
 * `repository`: *Optional.* The repository where we can found the build number in travis. If it's not set `build` parameter will be associated to the repository given in source configuration
 
-* `unwait-build`: *Optional.* Don't wait travis to finish the build. Defaults to `false`
+* `skip-wait`: *Optional.* Don't wait travis to finish the build. Defaults to `false`
 
 ## Example
 

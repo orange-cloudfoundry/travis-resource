@@ -10,10 +10,11 @@ type DefaultSource struct {
 	Url            string   `json:"travis-url"`
 }
 type OutParams struct {
-	Build       interface{}  `json:"build"`
-	Branch      string       `json:"branch"`
-	Repository  string       `json:"repository"`
-	UnWaitBuild bool         `json:"unwait-build"`
+	Build      interface{}  `json:"build"`
+	Branch     string       `json:"branch"`
+	Repository string       `json:"repository"`
+	SkipWait   bool         `json:"skip-wait"`
+}
 }
 type Version struct {
 	BuildNumber string `json:"build"`
@@ -28,11 +29,10 @@ type CheckRequest struct {
 	Version Version        `json:"version"`
 }
 type InRequest struct {
-	Source  DefaultSource  `json:"source"`
-	Version Version        `json:"version"`
+	CheckRequest
 }
 type OutRequest struct {
-	InRequest
+	CheckRequest
 	OutParams OutParams `json:"params"`
 }
 type CheckResponse []Version

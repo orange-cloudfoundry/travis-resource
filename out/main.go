@@ -49,7 +49,7 @@ func main() {
 	}
 
 	travisClient.Builds.Restart(build.Id)
-	if !request.OutParams.UnWaitBuild {
+	if !request.OutParams.SkipWait {
 		waitBuild(travisClient, repository, build.Number, request)
 	}
 	build, err = travisClient.Builds.GetFirstBuildFromBuildNumber(repository, build.Number)
