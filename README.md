@@ -17,21 +17,21 @@ Track travis builds and can trigger them.
 
 * `github-token`: *if `travis-token` set it becomes unnecessary* A github token to authenticate to travis.
 
-* `travis-token`: *if `github-token` set it becomes unnecessary* A travis token to authenticate to travis. **Note:** Do not confuse the access token with the token found on your profile page.
+* `travis-token`: *if `github-token` set it becomes unnecessary* A travis token to authenticate to travis. **Note:** Do not confuse the access token with the token found on your travis profile page.
 
 
 ## Behavior
 
 ### `check`: Check for new builds.
 
-Find the last build triggered on travis for the repository set and branch set (if set).
+Find the last build triggered on travis for the repository set and branch (if given).
 
 
 ### `in`: Fetch the last build triggered on travis and retrieve information about it.
 
-Find information the last build triggered on travis for the repository set and branch set (if set) and place information about the build inside the destination folder.
+Find information the last build triggered on travis for the repository set and and branch (if given) and place information about the build inside the destination folder.
 
-The name of this file is `build-info.json` and will give information in this format:
+The name of this file placed in destination foler is `build-info.json` and will give information in this format:
 
 ```json
 {
