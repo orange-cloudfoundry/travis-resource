@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+go get github.com/golang/mock/gomock
+go get github.com/golang/mock/mockgen
+mkdir $PWD/travis/mock_travis
+mockgen -destination $PWD/travis/mock_travis/mock_travis.go \
+    github.com/Orange-OpenSource/travis-resource/travis \
+    BuildsInterface,JobsInterface

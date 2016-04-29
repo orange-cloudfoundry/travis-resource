@@ -6,22 +6,8 @@ import (
 	"github.com/Orange-OpenSource/travis-resource/model"
 	"encoding/json"
 	"github.com/Orange-OpenSource/travis-resource/common"
-	"github.com/Orange-OpenSource/travis-resource/travis"
-	"path/filepath"
-	"fmt"
-	"io"
+	. "github.com/Orange-OpenSource/travis-resource/in/command"
 )
-
-const (
-	LOGS_FOLDER string = "travis-logs"
-	LOGS_FILENAME_PATTERN = "job-%d.log"
-)
-
-type InCommand struct {
-	travisClient      *travis.Client
-	request           model.InRequest
-	destinationFolder string
-}
 
 func main() {
 	if len(os.Args) <= 1 {
@@ -42,86 +28,14 @@ func main() {
 	common.FatalIf("failed to create travis client", err)
 
 	inCommand := &InCommand{travisClient, request, destinationFolder}
-	build, listBuild, err := inCommand.getBuildInfo()
+	build, listBuild, err := inCommand.GetBuildInfo()
 	common.FatalIf("can't get build", err)
 
-	err = inCommand.writeInBuildInfoFile(listBuild)
+	err = inCommand.WriteInBuildInfoFile(listBuild)
 	common.FatalIf("can't create file build info", err)
 
-	err = inCommand.downloadLogs(build)
+	err = inCommand.DownloadLogs(build)
 	common.FatalIf("can't download logs", err)
 
-	inCommand.sendResponse(build, os.Stdout)
-}
-func (this *InCommand) sendResponse(build travis.Build, w io.Writer) {
-	response := model.InResponse{
-		Metadata: common.GetMetadatasFromBuild(build),
-		Version: model.Version{this.request.Version.BuildNumber},
-	}
-	json.NewEncoder(w).Encode(response)
-}
-func (this *InCommand) getBuildInfo() (travis.Build, travis.ListBuildsResponse, error) {
-	var build travis.Build
-	var err error
-	var listBuild travis.ListBuildsResponse
-
-	builds, jobs, commits, _, err := this.travisClient.Builds.ListFromRepository(this.request.Source.Repository, &travis.BuildListOptions{
-		Number: this.request.Version.BuildNumber,
-	})
-	if err != nil {
-		return build, listBuild, err
-	}
-	common.FatalIf("can't get build", err)
-	if len(builds) == 0 {
-		return build, listBuild, errors.New("there is no builds in travis")
-	}
-	build = builds[0]
-	listBuild = travis.ListBuildsResponse{
-		Builds: builds,
-		Jobs: jobs,
-		Commits: commits,
-	}
-	return build, listBuild, nil
-}
-func (this *InCommand) writeInBuildInfoFile(listBuild travis.ListBuildsResponse) error {
-	file, err := os.Create(filepath.Join(this.destinationFolder, common.FILENAME_BUILD_INFO))
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-	listBuildJson, err := json.MarshalIndent(listBuild, "", "\t")
-	if err != nil {
-		return err
-	}
-	file.Write(listBuildJson)
-	return nil
-}
-func (this *InCommand) downloadLogs(build travis.Build) error {
-	if !this.request.InParams.DownloadLogs {
-		return nil
-	}
-	err := os.MkdirAll(filepath.Join(this.destinationFolder, LOGS_FOLDER), 0755)
-	if err != nil {
-		return err
-	}
-	for _, jobId := range build.JobIds {
-		err = this.downloadLogFromJob(jobId)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-func (this *InCommand) downloadLogFromJob(jobId uint) error {
-	file, err := os.Create(filepath.Join(this.destinationFolder, LOGS_FOLDER, fmt.Sprintf(LOGS_FILENAME_PATTERN, jobId)))
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-	logs, _, err := this.travisClient.Jobs.RawLog(jobId)
-	if err != nil {
-		return err
-	}
-	file.Write(logs)
-	return nil
+	inCommand.SendResponse(build, os.Stdout)
 }

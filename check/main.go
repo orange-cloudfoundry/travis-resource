@@ -6,14 +6,8 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/Orange-OpenSource/travis-resource/common"
-	"github.com/Orange-OpenSource/travis-resource/travis"
-	"io"
+	. "github.com/Orange-OpenSource/travis-resource/check/command"
 )
-
-type CheckCommand struct {
-	travisClient *travis.Client
-	request      model.CheckRequest
-}
 
 func main() {
 	var request model.CheckRequest
@@ -30,32 +24,4 @@ func main() {
 	common.FatalIf("can't get build", err)
 
 	checkCommand.SendResponse(buildNumber, os.Stdout)
-}
-func (this *CheckCommand) SendResponse(buildNumber string, w io.Writer) {
-	response := model.CheckResponse{model.Version{buildNumber}}
-	json.NewEncoder(w).Encode(response)
-}
-func (this *CheckCommand) GetBuildNumber() (string, error) {
-	var builds []travis.Build
-	var err error
-	if this.request.Source.Branch != "" {
-		if this.request.Source.CheckAllBuilds {
-			builds, _, _, _, err = this.travisClient.Builds.ListFromRepositoryWithBranch(this.request.Source.Repository, this.request.Source.Branch, nil)
-		} else {
-			builds, _, _, _, err = this.travisClient.Builds.ListSucceededFromRepositoryWithBranch(this.request.Source.Repository, this.request.Source.Branch, nil)
-		}
-	} else {
-		if this.request.Source.CheckAllBuilds {
-			builds, _, _, _, err = this.travisClient.Builds.ListFromRepository(this.request.Source.Repository, nil)
-		} else {
-			builds, _, _, _, err = this.travisClient.Builds.ListSucceededFromRepository(this.request.Source.Repository, nil)
-		}
-	}
-	if err != nil {
-		return "", err
-	}
-	if len(builds) == 0 {
-		return "", errors.New("there is no builds in travis")
-	}
-	return builds[0].Number, nil
 }

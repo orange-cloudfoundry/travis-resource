@@ -1,6 +1,6 @@
 #!/bin/bash
 # vim: set ft=sh
-set -eu
+set -eux
 export GOPATH=$PWD/gopath
 export PATH=$GOPATH/bin:$PATH
 BUILD_DIR=$PWD/built-resource
