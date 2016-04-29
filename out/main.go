@@ -36,16 +36,16 @@ func main() {
 	}
 	if buildParam == "latest" || (request.OutParams.Repository != "" && request.OutParams.Build == "" && request.OutParams.Branch == "") {
 		build, err = travisClient.Builds.GetFirstFinishedBuild(repository)
-		common.FatalIf("can't get build", err)
+		common.FatalIf("can't get build for repository " + repository + " with latest build", err)
 	} else if buildParam != "" {
 		build, err = travisClient.Builds.GetFirstBuildFromBuildNumber(repository, buildParam)
-		common.FatalIf("can't get build", err)
+		common.FatalIf("can't get build for repository " + repository + " with build " + buildParam, err)
 	} else if request.OutParams.Branch != "" {
 		build, err = travisClient.Builds.GetFirstFinishedBuildWithBranch(repository, request.OutParams.Branch)
-		common.FatalIf("can't get build", err)
+		common.FatalIf("can't get build for repository " + repository + " with branch " + request.OutParams.Branch, err)
 	} else {
 		build, err = travisClient.Builds.GetFirstBuildFromBuildNumber(repository, request.Version.BuildNumber)
-		common.FatalIf("can't get build", err)
+		common.FatalIf("can't get build for repository " + repository + " with build " + request.Version.BuildNumber, err)
 	}
 
 	travisClient.Builds.Restart(build.Id)
