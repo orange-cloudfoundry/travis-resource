@@ -14,6 +14,8 @@ import (
 	"net/http"
 
 	"github.com/fatih/structs"
+	"bytes"
+	"bufio"
 )
 
 // JobsService handles communication with the jobs
@@ -24,12 +26,12 @@ type JobsService struct {
 
 // Job represents a Travis CI job
 type Job struct {
-	Id           uint   `json:"id,omitempty"`
-	BuildId      uint   `json:"build_id,omitempty"`
-	RepositoryId uint   `json:"repository_id,omitempty"`
-	CommitId     uint   `json:"commit_id,omitempty"`
-	LogId        uint   `json:"log_id,omitempty"`
-	Number       string `json:"number,omitempty"`
+	Id            uint   `json:"id,omitempty"`
+	BuildId       uint   `json:"build_id,omitempty"`
+	RepositoryId  uint   `json:"repository_id,omitempty"`
+	CommitId      uint   `json:"commit_id,omitempty"`
+	LogId         uint   `json:"log_id,omitempty"`
+	Number        string `json:"number,omitempty"`
 	// Config        Config `json:"config,omitempty"`
 	State         string `json:"state,omitempty"`
 	StartedAt     string `json:"started_at,omitempty"`
@@ -43,7 +45,9 @@ type Job struct {
 type findJobsResponse struct {
 	Jobs []Job `json:"jobs"`
 }
-
+type RawOpt struct {
+	Deansi bool `url:"deansi"`
+}
 // getJobResponse represents the response of a call
 // to the Travis CI get build endpoint.
 type getJobResponse struct {
@@ -58,7 +62,7 @@ type JobFindOptions struct {
 	ListOptions
 
 	// List of job ids
-	Ids []uint `url:"ids,omitempty"`
+	Ids   []uint `url:"ids,omitempty"`
 
 	// Job state to filter by
 	State string `url:"state,omitempty"`
@@ -199,11 +203,30 @@ func (js *JobsService) Restart(id uint) (*http.Response, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	resp, err := js.client.Do(req, nil)
 	if err != nil {
 		return resp, err
 	}
 
 	return resp, err
+}
+
+func (js *JobsService) RawLog(id uint) ([]byte, *http.Response, error) {
+	var logsBuffer bytes.Buffer
+	writer := bufio.NewWriter(&logsBuffer)
+	u, err := urlWithOptions(fmt.Sprintf("/jobs/%d/log.txt", id), &RawOpt{true})
+	if err != nil {
+		return make([]byte, 0), nil, err
+	}
+
+	req, err := js.client.NewRequest("GET", u, nil, nil)
+	if err != nil {
+		return make([]byte, 0), nil, err
+	}
+	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+	resp, err := js.client.Do(req, writer)
+	if err != nil {
+		return make([]byte, 0), resp, err
+	}
+	return logsBuffer.Bytes(), resp, err
 }

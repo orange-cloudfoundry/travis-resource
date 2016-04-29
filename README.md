@@ -68,6 +68,9 @@ The name of this file placed in destination foler is `build-info.json` and will 
 }
 ```
 
+#### Parameters
+
+* `download-logs`: *Optional.* If set to true it will download logs for every jobs in a build and put them in `travis-logs` folder inside the destination folder, log files follow this filename pattern: `job-{job id}.log`. Defaults to `false`.
 
 ### `out`: Restart a build on travis.
 

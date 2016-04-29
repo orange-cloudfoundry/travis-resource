@@ -11,6 +11,12 @@ import (
 	"time"
 )
 
+type OutCommand struct {
+	travisClient *travis.Client
+	request      model.OutRequest
+	repository   string
+}
+
 func main() {
 
 	var request model.OutRequest
@@ -27,6 +33,7 @@ func main() {
 	if request.OutParams.Repository != "" {
 		repository = request.OutParams.Repository
 	}
+	outCommand := &OutCommand{travisClient, request, repository}
 	buildParam := ""
 	if buildParamNumber, ok := request.OutParams.Build.(float64); ok {
 		buildParam = strconv.FormatFloat(buildParamNumber, 'f', 0, 64)
@@ -34,41 +41,31 @@ func main() {
 	if buildParamString, ok := request.OutParams.Build.(string); ok {
 		buildParam = buildParamString
 	}
-	if buildParam == "latest" || (request.OutParams.Repository != "" && request.OutParams.Build == "" && request.OutParams.Branch == "") {
-		build, err = travisClient.Builds.GetFirstFinishedBuild(repository)
-		common.FatalIf("can't get build for repository " + repository + " with latest build", err)
-	} else if buildParam != "" {
-		build, err = travisClient.Builds.GetFirstBuildFromBuildNumber(repository, buildParam)
-		common.FatalIf("can't get build for repository " + repository + " with build " + buildParam, err)
-	} else if request.OutParams.Branch != "" {
-		build, err = travisClient.Builds.GetFirstFinishedBuildWithBranch(repository, request.OutParams.Branch)
-		common.FatalIf("can't get build for repository " + repository + " with branch " + request.OutParams.Branch, err)
-	} else {
-		build, err = travisClient.Builds.GetFirstBuildFromBuildNumber(repository, request.Version.BuildNumber)
-		common.FatalIf("can't get build for repository " + repository + " with build " + request.Version.BuildNumber, err)
-	}
+
+	build, err = outCommand.getBuild(buildParam)
+	common.FatalIf("fetch build error", err)
 
 	travisClient.Builds.Restart(build.Id)
 	if !request.OutParams.SkipWait {
-		waitBuild(travisClient, repository, build.Number, request)
+		outCommand.waitBuild(build.Number)
 	}
 	build, err = travisClient.Builds.GetFirstBuildFromBuildNumber(repository, build.Number)
 	common.FatalIf("can't get build after restart", err)
 	response := model.InResponse{common.GetMetadatasFromBuild(build), model.Version{build.Number}}
 	json.NewEncoder(os.Stdout).Encode(response)
 }
-func waitBuild(travisClient *travis.Client, repository, buildNumber string, request model.OutRequest) {
+func (this *OutCommand) waitBuild(buildNumber string) {
 	var build travis.Build
 	var err error
 	var travisUrl string
-	if request.Source.Url != "" {
-		travisUrl = request.Source.Url
+	if this.request.Source.Url != "" {
+		travisUrl = this.request.Source.Url
 	} else {
-		travisUrl = common.GetTravisUrl(request.Source.Pro)
+		travisUrl = common.GetTravisUrl(this.request.Source.Pro)
 	}
 	travisUrl = common.GetTravisDashboardUrl(travisUrl)
 	for {
-		build, err = travisClient.Builds.GetFirstBuildFromBuildNumber(repository, buildNumber)
+		build, err = this.travisClient.Builds.GetFirstBuildFromBuildNumber(this.repository, buildNumber)
 		common.FatalIf("can't get build after restart", err)
 		if !stringInSlice(build.State, travis.RUNNING_STATE) {
 			break
@@ -77,8 +74,37 @@ func waitBuild(travisClient *travis.Client, repository, buildNumber string, requ
 	}
 	if build.State != travis.SUCCEEDED_STATE {
 		common.FatalIf("Build '" + build.Number + "' failed",
-			errors.New("\n\tstate: " + build.State + "\n\tsee: " + travisUrl + repository + "/builds/" + strconv.Itoa(int(build.Id))))
+			errors.New("\n\tstate: " + build.State + "\n\tsee: " + travisUrl + this.repository + "/builds/" + strconv.Itoa(int(build.Id))))
 	}
+}
+func (this *OutCommand) getBuild(buildParam string) (travis.Build, error) {
+	var build travis.Build
+	var err error
+	if buildParam == "latest" || (this.request.OutParams.Repository != "" && this.request.OutParams.Build == "" && this.request.OutParams.Branch == "") {
+		build, err = this.travisClient.Builds.GetFirstFinishedBuild(this.repository)
+		if err != nil {
+			return build, errors.New("can't get build for repository " + this.repository + " with latest build " + err.Error())
+		}
+		return build, nil
+	} else if buildParam != "" {
+		build, err = this.travisClient.Builds.GetFirstBuildFromBuildNumber(this.repository, buildParam)
+		if err != nil {
+			return build, errors.New("can't get build for repository " + this.repository + " with build " + buildParam + " " + err.Error())
+		}
+		return build, nil
+	} else if this.request.OutParams.Branch != "" {
+		build, err = this.travisClient.Builds.GetFirstFinishedBuildWithBranch(this.repository, this.request.OutParams.Branch)
+		if err != nil {
+			return build, errors.New("can't get build for repository " + this.repository + " with branch " + this.request.OutParams.Branch + " " + err.Error())
+		}
+		return build, nil
+	}
+	build, err = this.travisClient.Builds.GetFirstBuildFromBuildNumber(this.repository, this.request.Version.BuildNumber)
+	if err != nil {
+		return build, errors.New("can't get build for repository " + this.repository + " with build " + this.request.Version.BuildNumber + " " + err.Error())
+	}
+	return build, nil
+
 }
 func stringInSlice(str string, list []string) bool {
 	for _, v := range list {

@@ -15,6 +15,8 @@ type OutParams struct {
 	Repository string       `json:"repository"`
 	SkipWait   bool         `json:"skip-wait"`
 }
+type InParams struct {
+	DownloadLogs bool `json:"download-logs"`
 }
 type Version struct {
 	BuildNumber string `json:"build"`
@@ -30,6 +32,7 @@ type CheckRequest struct {
 }
 type InRequest struct {
 	CheckRequest
+	InParams InParams       `json:"params"`
 }
 type OutRequest struct {
 	CheckRequest
