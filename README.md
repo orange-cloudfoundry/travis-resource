@@ -89,8 +89,12 @@ By default it will restart the build give by the file `build-info.json`.
 ## Example
 
 ``` yaml
+resource_types:
+- name: travis
+  type: docker-image
+  source:
+    repository: orangeopensource/travis-resource-image
 resources:
-
 - name: travis-resource
   type: travis
   source:
