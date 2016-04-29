@@ -8,7 +8,8 @@ go get -d github.com/Orange-OpenSource/travis-resource/...
 cd $GOPATH/src/github.com/Orange-OpenSource/travis-resource
 
 go install github.com/onsi/ginkgo/ginkgo
-
+go get github.com/onsi/ginkgo
+go get github.com/onsi/gomega
 CGO_ENABLED=1 go test ./...
 
 ./bin/build
