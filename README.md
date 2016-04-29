@@ -15,9 +15,9 @@ Track travis builds and can trigger them.
 
 * `travis-url`: *Optional.* If set it will override default travis api with this one.
 
-* `github-token`: *if `travis-token` it becomes unnecessary* A github token to authenticate to travis.
+* `github-token`: *if `travis-token` set it becomes unnecessary* A github token to authenticate to travis.
 
-* `travis-token`: *if `github-token` it becomes unnecessary* A travis token to authenticate to travis.
+* `travis-token`: *if `github-token` set it becomes unnecessary* A travis token to authenticate to travis. **Note:** Do not confuse the access token with the token found on your profile page.
 
 
 ## Behavior
