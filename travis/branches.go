@@ -14,9 +14,15 @@ import (
 	"net/http"
 )
 
+type BranchesInterface interface {
+	ListFromRepository(string) ([]Branch, *http.Response, error)
+	Get(string, uint) (*Branch, *http.Response, error)
+	GetFromSlug(string, string) (*Branch, *http.Response, error)
+}
 // BranchesService handles communication with the branches
 // related methods of the Travis CI API.
 type BranchesService struct {
+	BranchesInterface
 	client *Client
 }
 
@@ -27,12 +33,12 @@ type Branch struct {
 	CommitId     uint   `json:"commit_id,omitempty"`
 	Number       string `json:"number,omitempty"`
 	// Config       Config `json:"config,omitempty"`
-	State       string `json:"state,omitempty"`
-	StartedAt   string `json:"started_at,omitempty"`
-	FinishedAt  string `json:"finished_at,omitempty"`
-	Duration    uint   `json:"duration,omitempty"`
-	JobIds      []uint `json:"job_ids,omitempty"`
-	PullRequest bool   `json:"pull_request,omitempty"`
+	State        string `json:"state,omitempty"`
+	StartedAt    string `json:"started_at,omitempty"`
+	FinishedAt   string `json:"finished_at,omitempty"`
+	Duration     uint   `json:"duration,omitempty"`
+	JobIds       []uint `json:"job_ids,omitempty"`
+	PullRequest  bool   `json:"pull_request,omitempty"`
 }
 
 // listBranchesResponse represents the response of a call

@@ -8,6 +8,7 @@ package travis
 import (
 	"net/url"
 	"testing"
+	"net/http"
 )
 
 func TestClient_NewDefaultClient(t *testing.T) {
@@ -21,7 +22,7 @@ func TestClient_NewDefaultClient(t *testing.T) {
 }
 
 func TestClient_NewRequest(t *testing.T) {
-	c := NewClient(TRAVIS_API_DEFAULT_URL, "")
+	c := NewClient(TRAVIS_API_DEFAULT_URL, "", http.DefaultClient)
 
 	req, err := c.NewRequest("GET", "/test", nil, nil)
 	if err != nil {
@@ -36,7 +37,7 @@ func TestClient_NewRequest(t *testing.T) {
 
 	assert(
 		t,
-		req.URL.String() == TRAVIS_API_DEFAULT_URL+"test",
+		req.URL.String() == TRAVIS_API_DEFAULT_URL + "test",
 		"Wrong Request URL set",
 	)
 
@@ -44,7 +45,7 @@ func TestClient_NewRequest(t *testing.T) {
 
 func TestClient_NewRequest_with_nil_headers_provided(t *testing.T) {
 	baseUrl, _ := url.Parse(TRAVIS_API_DEFAULT_URL)
-	c := NewClient(TRAVIS_API_DEFAULT_URL, "")
+	c := NewClient(TRAVIS_API_DEFAULT_URL, "", http.DefaultClient)
 
 	req, err := c.NewRequest("GET", "/users", nil, nil)
 	if err != nil {
@@ -72,7 +73,7 @@ func TestClient_NewRequest_with_nil_headers_provided(t *testing.T) {
 
 func TestClient_NewRequest_with_non_overriding_headers_provided(t *testing.T) {
 	baseUrl, _ := url.Parse(TRAVIS_API_DEFAULT_URL)
-	c := NewClient(TRAVIS_API_DEFAULT_URL, "")
+	c := NewClient(TRAVIS_API_DEFAULT_URL, "", http.DefaultClient)
 	h := map[string]string{
 		"Abc": "123",
 	}
@@ -108,7 +109,7 @@ func TestClient_NewRequest_with_non_overriding_headers_provided(t *testing.T) {
 }
 
 func TestClient_NewRequest_with_overriding_headers_provided(t *testing.T) {
-	c := NewClient(TRAVIS_API_DEFAULT_URL, "")
+	c := NewClient(TRAVIS_API_DEFAULT_URL, "", http.DefaultClient)
 	h := map[string]string{
 		"Host": "api.travis-ci.com",
 	}

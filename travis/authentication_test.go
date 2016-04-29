@@ -8,17 +8,18 @@ package travis
 import (
 	"fmt"
 	"testing"
+	"net/http"
 )
 
 func TestAuthenticate_UsingGithubToken_with_empty_token(t *testing.T) {
-	as := &AuthenticationService{client: NewClient(TRAVIS_API_DEFAULT_URL, "")}
+	as := &AuthenticationService{client: NewClient(TRAVIS_API_DEFAULT_URL, "", http.DefaultClient)}
 
 	_, _, err := as.UsingGithubToken("")
 	notOk(t, err)
 }
 
 func TestAuthenticate_UsingTravisToken_with_empty_token(t *testing.T) {
-	as := &AuthenticationService{client: NewClient(TRAVIS_API_DEFAULT_URL, "")}
+	as := &AuthenticationService{client: NewClient(TRAVIS_API_DEFAULT_URL, "", http.DefaultClient)}
 
 	err := as.UsingTravisToken("")
 	notOk(t, err)
@@ -26,7 +27,7 @@ func TestAuthenticate_UsingTravisToken_with_empty_token(t *testing.T) {
 
 func TestAuthenticate_UsingTravisToken_with_string_token(t *testing.T) {
 	token := "abc123easyasdoremi"
-	as := &AuthenticationService{client: NewClient(TRAVIS_API_DEFAULT_URL, token)}
+	as := &AuthenticationService{client: NewClient(TRAVIS_API_DEFAULT_URL, token, http.DefaultClient)}
 
 	err := as.UsingTravisToken(token)
 	ok(t, err)

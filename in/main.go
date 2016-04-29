@@ -9,6 +9,7 @@ import (
 	"github.com/Orange-OpenSource/travis-resource/travis"
 	"path/filepath"
 	"fmt"
+	"io"
 )
 
 const (
@@ -50,11 +51,14 @@ func main() {
 	err = inCommand.downloadLogs(build)
 	common.FatalIf("can't download logs", err)
 
+	inCommand.sendResponse(build, os.Stdout)
+}
+func (this *InCommand) sendResponse(build travis.Build, w io.Writer) {
 	response := model.InResponse{
 		Metadata: common.GetMetadatasFromBuild(build),
-		Version: model.Version{request.Version.BuildNumber},
+		Version: model.Version{this.request.Version.BuildNumber},
 	}
-	json.NewEncoder(os.Stdout).Encode(response)
+	json.NewEncoder(w).Encode(response)
 }
 func (this *InCommand) getBuildInfo() (travis.Build, travis.ListBuildsResponse, error) {
 	var build travis.Build

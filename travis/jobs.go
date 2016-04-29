@@ -18,9 +18,18 @@ import (
 	"bufio"
 )
 
+type JobsInterface interface {
+	Get(uint) (*Job, *http.Response, error)
+	ListFromBuild(uint) ([]Job, *http.Response, error)
+	Find(*JobFindOptions) ([]Job, *http.Response, error)
+	Cancel(uint) (*http.Response, error)
+	Restart(uint) (*http.Response, error)
+	RawLog(uint) ([]byte, *http.Response, error)
+}
 // JobsService handles communication with the jobs
 // related methods of the Travis CI API.
 type JobsService struct {
+	JobsInterface
 	client *Client
 }
 

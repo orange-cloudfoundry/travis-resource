@@ -57,15 +57,15 @@ type Client struct {
 	UserAgent      string
 
 	// Services used to manipulate API entities
-	Authentication *AuthenticationService
-	Repositories   *RepositoriesService
-	Builds         *BuildsService
-	Jobs           *JobsService
-	Branches       *BranchesService
-	Logs           *LogsService
-	Commits        *CommitsService
-	Requests       *RequestsService
-	Users          *UsersService
+	Authentication AuthenticationInterface
+	Repositories   RepositoriesInterface
+	Builds         BuildsInterface
+	Jobs           JobsInterface
+	Branches       BranchesInterface
+	Logs           LogsInterface
+	Commits        CommitsInterface
+	Requests       RequestsInterface
+	Users          UsersInterface
 }
 
 // NewClient returns a new Travis API client.

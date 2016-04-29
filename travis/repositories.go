@@ -14,9 +14,15 @@ import (
 	"net/http"
 )
 
+type RepositoriesInterface interface {
+	Find(*RepositoryListOptions) ([]Repository, *http.Response, error)
+	GetFromSlug(string) (*Repository, *http.Response, error)
+	Get(uint) (*Repository, *http.Response, error)
+}
 // RepositoriesService handles communication with the builds
 // related methods of the Travis CI API.
 type RepositoriesService struct {
+	RepositoriesInterface
 	client *Client
 }
 
@@ -38,22 +44,22 @@ type Repository struct {
 // RepositoriesService.Findmethod.
 type RepositoryListOptions struct {
 	// list of repository ids to fetch, cannot be combined with other parameters
-	Ids []uint `url:"ids,omitempty"`
+	Ids       []uint `url:"ids,omitempty"`
 
 	// filter by user that has access to it (github login)
-	Member string `url:"member,omitempty"`
+	Member    string `url:"member,omitempty"`
 
 	// filter by owner name (first segment of slug)
 	OwnerName string `url:"owner_name,omitempty"`
 
 	// filter by slug
-	Slug string `url:"slug,omitempty"`
+	Slug      string `url:"slug,omitempty"`
 
 	// filter by search term
-	Search string `url:"search,omitempty"`
+	Search    string `url:"search,omitempty"`
 
 	// if true, will only return repositories that are enabled
-	Active bool `url:"active,omitempty"`
+	Active    bool `url:"active,omitempty"`
 }
 
 // listRepositoriesResponse represents the response of a call

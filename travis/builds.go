@@ -19,7 +19,21 @@ var SUCCEEDED_STATE string = "passed"
 var RUNNING_STATE []string = []string{"created", "started"}
 // BuildsService handles communication with the builds
 // related methods of the Travis CI API.
+type BuildsInterface interface {
+	List(*BuildListOptions) ([]Build, []Job, []Commit, *http.Response, error)
+	ListFromRepository(string, *BuildListOptions) ([]Build, []Job, []Commit, *http.Response, error)
+	GetFirstBuildFromBuildNumber(string, string) (Build, error)
+	GetFirstFinishedBuild(string) (Build, error)
+	GetFirstFinishedBuildWithBranch(string, string) (Build, error)
+	ListSucceededFromRepository(string, *BuildListOptions) ([]Build, []Job, []Commit, *http.Response, error)
+	ListSucceededFromRepositoryWithBranch(string, string, *BuildListOptions) ([]Build, []Job, []Commit, *http.Response, error)
+	ListFromRepositoryWithBranch(string, string, *BuildListOptions) ([]Build, []Job, []Commit, *http.Response, error)
+	Get(uint) (*Build, []Job, *Commit, *http.Response, error)
+	Cancel(uint) (*http.Response, error)
+	Restart(uint) (*http.Response, error)
+}
 type BuildsService struct {
+	BuildsInterface
 	client *Client
 }
 

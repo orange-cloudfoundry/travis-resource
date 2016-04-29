@@ -10,9 +10,14 @@ import (
 	"net/http"
 )
 
+type AuthenticationInterface interface {
+	UsingGithubToken(string) (AccessToken, *http.Response, error)
+	UsingTravisToken(string) error
+}
 // BuildsService handles communication with the builds
 // related methods of the Travis CI API.
 type AuthenticationService struct {
+	AuthenticationInterface
 	client *Client
 }
 

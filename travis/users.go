@@ -14,9 +14,15 @@ import (
 	"net/http"
 )
 
+type UsersInterface interface {
+	GetAuthenticated() (*User, *http.Response, error)
+	Get(uint) (*User, *http.Response, error)
+	Sync() (*http.Response, error)
+}
 // UsersService handles communication with the users
 // related methods of the Travis CI API.
 type UsersService struct {
+	UsersInterface
 	client *Client
 }
 

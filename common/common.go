@@ -4,7 +4,6 @@ import (
 	"github.com/Orange-OpenSource/travis-resource/travis"
 	"os"
 	"net/http"
-	"errors"
 	"github.com/Orange-OpenSource/travis-resource/model"
 	"time"
 	"net"
@@ -16,10 +15,8 @@ const (
 	FILENAME_BUILD_INFO string = "build-info.json"
 )
 
-func MakeTravisClient(request model.DefaultSource) (*travis.Client, error) {
-	if request.GithubToken == "" && request.TravisToken == "" {
-		return nil, errors.New("Not github token or travis token set")
-	}
+func MakeTravisClient(request model.Source) (*travis.Client, error) {
+
 	baseTransport := &http.Transport{
 		Proxy: http.ProxyFromEnvironment,
 		Dial: (&net.Dialer{
@@ -39,15 +36,14 @@ func MakeTravisClient(request model.DefaultSource) (*travis.Client, error) {
 	} else {
 		travisUrl = GetTravisUrl(request.Pro)
 	}
-	if request.TravisToken != "" {
-		travisClient = travis.NewClient(travisUrl, request.TravisToken, httpClient)
-	} else {
+	if request.GithubToken != "" {
 		travisClient = travis.NewClient(travisUrl, "", httpClient)
-		// authWithGithubClient.IsAuthenticated() will return false
 		_, _, err := travisClient.Authentication.UsingGithubToken(request.GithubToken)
 		if err != nil {
 			return nil, err
 		}
+	} else {
+		travisClient = travis.NewClient(travisUrl, request.TravisToken, httpClient)
 	}
 	return travisClient, nil
 }
@@ -71,7 +67,14 @@ func FatalIf(doing string, err error) {
 		Fatal(doing + ": " + err.Error())
 	}
 }
-
+func StringInSlice(str string, list []string) bool {
+	for _, v := range list {
+		if v == str {
+			return true
+		}
+	}
+	return false
+}
 func Fatal(message string) {
 	println(message)
 	os.Exit(1)

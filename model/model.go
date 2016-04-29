@@ -1,6 +1,6 @@
 package model
 
-type DefaultSource struct {
+type Source struct {
 	Repository     string   `json:"repository"`
 	Branch         string   `json:"branch"`
 	GithubToken    string   `json:"github-token"`
@@ -27,12 +27,12 @@ type Metadata struct {
 	Value string `json:"value"`
 }
 type CheckRequest struct {
-	Source  DefaultSource  `json:"source"`
-	Version Version        `json:"version"`
+	Source  Source  `json:"source"`
+	Version Version `json:"version"`
 }
 type InRequest struct {
 	CheckRequest
-	InParams InParams       `json:"params"`
+	InParams InParams `json:"params"`
 }
 type OutRequest struct {
 	CheckRequest

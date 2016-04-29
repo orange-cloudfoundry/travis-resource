@@ -14,11 +14,16 @@ import (
 	"net/http"
 )
 
+type CommitsInterface interface {
+	GetFromBuild(uint) (*Commit, *http.Response, error)
+	ListFromRepository(string) ([]Commit, *http.Response, error)
+}
 // CommitsService handles communication with the commits
 // related parts of the Travis CI API. As commits are not directly
 // exposed as an endpoint, most of this service methods will fetch
 // commits through the builds or jobs endpoint.
 type CommitsService struct {
+	CommitsInterface
 	client *Client
 }
 

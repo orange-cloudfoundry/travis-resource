@@ -14,9 +14,14 @@ import (
 	"net/http"
 )
 
+type RequestsInterface interface {
+	Get(uint) (*Request, *Commit, *http.Response, error)
+	ListFromRepository(string, *RequestsListOptions) ([]Request, []Commit, *http.Response, error)
+}
 // RequestsService handles communication with the requests
 // related methods of the Travis CI API.
 type RequestsService struct {
+	RequestsInterface
 	client *Client
 }
 
@@ -54,13 +59,13 @@ type RequestsListOptions struct {
 	RepositoryId uint `url:"repository_id,omitempty"`
 
 	// repository slug the requests belong to
-	Slug string `url:"slug,omitempty"`
+	Slug         string `url:"slug,omitempty"`
 
 	// maximum number of requests to return (cannot be larger than 100)
-	Limit uint `url:"limit,omitempty"`
+	Limit        uint `url:"limit,omitempty"`
 
 	// list requests before older_than (with older_than being a request id)
-	OlderThan uint `url:"older_than,omitempty"`
+	OlderThan    uint `url:"older_than,omitempty"`
 }
 
 // Get fetches the request with the provided id from the Travis CI API.

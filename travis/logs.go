@@ -15,9 +15,14 @@ import (
 	"net/http"
 )
 
+type LogsInterface interface {
+	Get(uint) (*Log, *http.Response, error)
+	GetByJob(uint) (*Log, *http.Response, error)
+}
 // LogssService handles communication with the logs
 // related methods of the Travis CI API.
 type LogsService struct {
+	LogsInterface
 	client *Client
 }
 
