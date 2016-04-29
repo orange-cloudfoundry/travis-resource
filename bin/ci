@@ -1,11 +1,10 @@
 #!/bin/bash
 # vim: set ft=sh
-
+set -eu
 export GOPATH=$PWD/gopath
 export PATH=$GOPATH/bin:$PATH
 BUILD_DIR=$PWD/built-resource
-go get --help
-go get -d github.com/Orange-OpenSource/travis-resource
+go get -d github.com/Orange-OpenSource/travis-resource/...
 cd $GOPATH/src/github.com/Orange-OpenSource/travis-resource
 
 #go install github.com/onsi/ginkgo/ginkgo
