@@ -3,16 +3,18 @@ package main
 import (
 	"errors"
 	"os"
-	"github.com/ArthurHlt/travis-resource/model"
+	"github.com/Orange-OpenSource/travis-resource/model"
 	"encoding/json"
-	"github.com/ArthurHlt/travis-resource/common"
-	"github.com/ArthurHlt/travis-resource/travis"
+	"github.com/Orange-OpenSource/travis-resource/common"
+	"github.com/Orange-OpenSource/travis-resource/travis"
 	"path/filepath"
 	"fmt"
 )
 
-var LOGS_FOLDER string = "travis-logs"
-var LOGS_FILENAME_PATTERN = "job-%d.log"
+const (
+	LOGS_FOLDER string = "travis-logs"
+	LOGS_FILENAME_PATTERN = "job-%d.log"
+)
 
 type InCommand struct {
 	travisClient      *travis.Client

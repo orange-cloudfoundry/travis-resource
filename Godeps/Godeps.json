@@ -1,46 +1,11 @@
 {
-	"ImportPath": "github.com/ArthurHlt/travis-resource",
+	"ImportPath": "github.com/Orange-OpenSource/travis-resource",
 	"GoVersion": "go1.6",
 	"GodepVersion": "v62",
 	"Packages": [
 		"./..."
 	],
 	"Deps": [
-		{
-			"ImportPath": "github.com/blang/semver",
-			"Comment": "v3.0.1",
-			"Rev": "31b736133b98f26d5e078ec9eb591666edfd091f"
-		},
-		{
-			"ImportPath": "github.com/cloudfoundry/cli/cf/configuration",
-			"Comment": "v6.15.0-368-ge159714",
-			"Rev": "e159714370bd6f8267427b3d67e30477d6862569"
-		},
-		{
-			"ImportPath": "github.com/cloudfoundry/cli/cf/configuration/core_config",
-			"Comment": "v6.15.0-368-ge159714",
-			"Rev": "e159714370bd6f8267427b3d67e30477d6862569"
-		},
-		{
-			"ImportPath": "github.com/cloudfoundry/cli/cf/errors",
-			"Comment": "v6.15.0-368-ge159714",
-			"Rev": "e159714370bd6f8267427b3d67e30477d6862569"
-		},
-		{
-			"ImportPath": "github.com/cloudfoundry/cli/cf/i18n",
-			"Comment": "v6.15.0-368-ge159714",
-			"Rev": "e159714370bd6f8267427b3d67e30477d6862569"
-		},
-		{
-			"ImportPath": "github.com/cloudfoundry/cli/cf/models",
-			"Comment": "v6.15.0-368-ge159714",
-			"Rev": "e159714370bd6f8267427b3d67e30477d6862569"
-		},
-		{
-			"ImportPath": "github.com/cloudfoundry/cli/cf/resources",
-			"Comment": "v6.15.0-368-ge159714",
-			"Rev": "e159714370bd6f8267427b3d67e30477d6862569"
-		},
 		{
 			"ImportPath": "github.com/fatih/structs",
 			"Rev": "73c4e3dc02a78deaba8640d5f3a8c236ec1352bf"
@@ -50,33 +15,9 @@
 			"Rev": "6bb77fe6f42b85397288d4f6f67ac72f8f400ee7"
 		},
 		{
-			"ImportPath": "github.com/nicksnyder/go-i18n/i18n",
-			"Comment": "v1.4.0",
-			"Rev": "37e5c2de3e03e4b82693e3fcb4a6aa2cc4eb07e3"
-		},
-		{
-			"ImportPath": "github.com/nicksnyder/go-i18n/i18n/bundle",
-			"Comment": "v1.4.0",
-			"Rev": "37e5c2de3e03e4b82693e3fcb4a6aa2cc4eb07e3"
-		},
-		{
-			"ImportPath": "github.com/nicksnyder/go-i18n/i18n/language",
-			"Comment": "v1.4.0",
-			"Rev": "37e5c2de3e03e4b82693e3fcb4a6aa2cc4eb07e3"
-		},
-		{
-			"ImportPath": "github.com/nicksnyder/go-i18n/i18n/translation",
-			"Comment": "v1.4.0",
-			"Rev": "37e5c2de3e03e4b82693e3fcb4a6aa2cc4eb07e3"
-		},
-		{
 			"ImportPath": "github.com/oleiade/reflections",
 			"Comment": "0.1.2-2-g632977f",
 			"Rev": "632977f98cd34d217c4b57d0840ec188b3d3dcaf"
-		},
-		{
-			"ImportPath": "gopkg.in/yaml.v2",
-			"Rev": "f7716cbe52baa25d2e9b0d0da546fcf909fc16b4"
 		}
 	]
 }

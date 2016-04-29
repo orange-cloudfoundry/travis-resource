@@ -2,11 +2,11 @@ package main
 
 import (
 	"os"
-	"github.com/ArthurHlt/travis-resource/model"
+	"github.com/Orange-OpenSource/travis-resource/model"
 	"encoding/json"
-	"github.com/cloudfoundry/cli/cf/errors"
-	"github.com/ArthurHlt/travis-resource/common"
-	"github.com/ArthurHlt/travis-resource/travis"
+	"errors"
+	"github.com/Orange-OpenSource/travis-resource/common"
+	"github.com/Orange-OpenSource/travis-resource/travis"
 )
 
 func main() {

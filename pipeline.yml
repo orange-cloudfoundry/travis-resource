@@ -2,7 +2,7 @@ resources:
   - name: travis-resource-git
     type: git
     source:
-      uri: https://github.com/ArthurHlt/travis-resource.git
+      uri: https://github.com/Orange-OpenSource/travis-resource.git
       branch: master
   - name: travis-resource-image
     type: docker-image

@@ -4,8 +4,7 @@ Track travis builds and can trigger them.
 
 ## Source Configuration
 
-* `repository`: *Required.* The name of the repository, e.g.
-`ArthurHlt/travis-resource`.
+* `repository`: *Required.* The name of the repository, e.g. `Orange-OpenSource/travis-resource`.
 
 * `branch`: *Optional.* The branch to track. Defaults to the last build found on travis.
 

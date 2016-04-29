@@ -1,18 +1,20 @@
 package common
 
 import (
-	"github.com/ArthurHlt/travis-resource/travis"
+	"github.com/Orange-OpenSource/travis-resource/travis"
 	"os"
 	"net/http"
-	"github.com/cloudfoundry/cli/cf/errors"
-	"github.com/ArthurHlt/travis-resource/model"
+	"errors"
+	"github.com/Orange-OpenSource/travis-resource/model"
 	"time"
 	"net"
 	"strconv"
 	"strings"
 )
 
-var FILENAME_BUILD_INFO string = "build-info.json"
+const (
+	FILENAME_BUILD_INFO string = "build-info.json"
+)
 
 func MakeTravisClient(request model.DefaultSource) (*travis.Client, error) {
 	if request.GithubToken == "" && request.TravisToken == "" {
