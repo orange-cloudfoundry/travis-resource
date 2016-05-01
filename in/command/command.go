@@ -29,7 +29,7 @@ type InCommand struct {
 func (c *InCommand) SendResponse(build travis.Build) {
 	response := model.InResponse{
 		Metadata: common.GetMetadatasFromBuild(build),
-		Version: model.Version{c.Request.Version.BuildNumber},
+		Version: []model.Version{model.Version{c.Request.Version.BuildNumber}},
 	}
 	c.Messager.SendJsonResponse(response)
 }

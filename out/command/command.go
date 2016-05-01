@@ -37,7 +37,7 @@ func (c *OutCommand) GetBuildParam() string {
 func (c *OutCommand) SendResponse(build travis.Build) {
 	response := model.InResponse{
 		Metadata: common.GetMetadatasFromBuild(build),
-		Version: model.Version{c.Request.Version.BuildNumber},
+		Version: []model.Version{model.Version{build.Number}},
 	}
 	c.Messager.SendJsonResponse(response)
 }
