@@ -98,7 +98,7 @@ func (c *InCommand) DownloadLogFromJob(jobId uint) error {
 		return err
 	}
 	defer file.Close()
-	c.Messager.LogItLn("\tDownloading log for job '%d' as file '%s' ...", jobId, logLocation)
+	c.Messager.LogItLn("-------\nDownloading log for job '%d' as file '%s' ...", jobId, logLocation)
 	resp, err := c.TravisClient.Jobs.RawLogOnlyResponse(jobId)
 	if err != nil {
 		return err
@@ -113,6 +113,6 @@ func (c *InCommand) DownloadLogFromJob(jobId uint) error {
 	if err != nil {
 		return err
 	}
-	c.Messager.LogItLn("\tFinished to download log for job '%d' as file '%s'.", jobId, logLocation)
+	c.Messager.LogItLn("Finished to download log for job '%d' as file '%s'.\n-------", jobId, logLocation)
 	return nil
 }
