@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 	"github.com/Orange-OpenSource/travis-resource/messager"
+	"fmt"
 )
 
 type OutCommand struct {
@@ -76,6 +77,10 @@ func (c *OutCommand) GetBuildUrl(build travis.Build) string {
 	}
 	travisUrl = common.GetTravisDashboardUrl(travisUrl)
 	return travisUrl + c.Repository + "/builds/" + strconv.Itoa(int(build.Id))
+}
+func (c *OutCommand) GetBuildUrlLink(build travis.Build) string {
+	buildUrl := c.GetBuildUrl(build)
+	return fmt.Sprintf("<a href=\"%s\">%s</a>", buildUrl, buildUrl)
 }
 func (c *OutCommand) GetBuild(buildParam string) (travis.Build, error) {
 	var build travis.Build
