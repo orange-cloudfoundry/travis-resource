@@ -34,5 +34,8 @@ func main() {
 	build, err = outCommand.Restart(build)
 	common.FatalIf("can't get build after restart", err)
 
-	outCommand.SendResponse(build)
+	commit, _, err := travisClient.Commits.GetFromBuild(build.Id)
+	common.FatalIf("can't get commit", err)
+
+	outCommand.SendResponse(build, *commit)
 }

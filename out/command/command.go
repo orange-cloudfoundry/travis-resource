@@ -5,10 +5,10 @@ import (
 	"github.com/Orange-OpenSource/travis-resource/model"
 	"errors"
 	"github.com/Orange-OpenSource/travis-resource/travis"
-	"strconv"
-	"time"
 	"github.com/Orange-OpenSource/travis-resource/messager"
+	"time"
 	"fmt"
+	"strconv"
 )
 
 type OutCommand struct {
@@ -34,9 +34,9 @@ func (c *OutCommand) GetBuildParam() string {
 	}
 	return buildParam
 }
-func (c *OutCommand) SendResponse(build travis.Build) {
+func (c *OutCommand) SendResponse(build travis.Build, commit travis.Commit) {
 	response := model.InResponse{
-		Metadata: common.GetMetadatasFromBuild(build),
+		Metadata: common.GetMetadatasFromBuild(build, commit),
 		Version: model.Version{build.Number},
 	}
 	c.Messager.SendJsonResponse(response)

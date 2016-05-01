@@ -26,9 +26,10 @@ type InCommand struct {
 	Messager          *messager.ResourceMessager
 }
 
-func (c *InCommand) SendResponse(build travis.Build) {
+func (c *InCommand) SendResponse(build travis.Build, commit travis.Commit) {
+
 	response := model.InResponse{
-		Metadata: common.GetMetadatasFromBuild(build),
+		Metadata: common.GetMetadatasFromBuild(build, commit),
 		Version: model.Version{build.Number},
 	}
 	c.Messager.SendJsonResponse(response)
@@ -57,7 +58,7 @@ func (c *InCommand) GetBuildInfo() (travis.Build, travis.ListBuildsResponse, err
 }
 func (c *InCommand) WriteInBuildInfoFile(listBuild travis.ListBuildsResponse) error {
 	fileLocation := filepath.Join(c.DestinationFolder, common.FILENAME_BUILD_INFO)
-	c.Messager.LogItLn("Writing build informations in file '[blue]%s[reset]' ...", fileLocation)
+	c.Messager.LogItLn("Writing build informations in file '[blue]%s[reset]' ...", common.FILENAME_BUILD_INFO)
 	file, err := os.Create(fileLocation)
 	if err != nil {
 		return err
@@ -77,7 +78,7 @@ func (c *InCommand) DownloadLogs(build travis.Build) error {
 		return nil
 	}
 	logsLocation := filepath.Join(c.DestinationFolder, LOGS_FOLDER)
-	c.Messager.LogItLn("Downloading logs in folder '[blue]%s[reset]' ...", logsLocation)
+	c.Messager.LogItLn("Downloading logs in folder '[blue]%s[reset]' ...", LOGS_FOLDER)
 	err := os.MkdirAll(logsLocation, 0755)
 	if err != nil {
 		return err
@@ -92,8 +93,8 @@ func (c *InCommand) DownloadLogs(build travis.Build) error {
 	return nil
 }
 func (c *InCommand) DownloadLogFromJob(jobId uint) error {
-	logLocation := fmt.Sprintf(LOGS_FILENAME_PATTERN, jobId)
-	file, err := os.Create(filepath.Join(c.DestinationFolder, LOGS_FOLDER, logLocation))
+	logLocation := filepath.Join(LOGS_FOLDER, fmt.Sprintf(LOGS_FILENAME_PATTERN, jobId))
+	file, err := os.Create(filepath.Join(c.DestinationFolder, logLocation))
 	if err != nil {
 		return err
 	}

@@ -47,10 +47,23 @@ func MakeTravisClient(request model.Source) (*travis.Client, error) {
 	}
 	return travisClient, nil
 }
-func GetMetadatasFromBuild(build travis.Build) ([]model.Metadata) {
+func GetMetadatasFromBuild(build travis.Build, commit travis.Commit) ([]model.Metadata) {
 	metadatas := make([]model.Metadata, 0)
 	metadatas = append(metadatas, model.Metadata{"travis_succeeded", strconv.FormatBool(build.State == travis.SUCCEEDED_STATE)})
 	metadatas = append(metadatas, model.Metadata{"travis_build_state", build.State})
+	metadatas = append(metadatas, model.Metadata{"travis_started_at", build.StartedAt})
+	if build.State == travis.SUCCEEDED_STATE {
+		duration, _ := time.ParseDuration(strconv.Itoa(int(build.Duration)) + "s")
+		metadatas = append(metadatas, model.Metadata{
+			Name: "travis_build_duration",
+			Value: duration.String(),
+		})
+	}
+	metadatas = append(metadatas, model.Metadata{"commit_author", commit.AuthorName})
+	metadatas = append(metadatas, model.Metadata{"commit_author_date", commit.CommittedAt})
+	metadatas = append(metadatas, model.Metadata{"commit_ref", commit.Sha})
+	metadatas = append(metadatas, model.Metadata{"commit_message", commit.Message})
+
 	return metadatas
 }
 func GetTravisUrl(pro bool) (string) {

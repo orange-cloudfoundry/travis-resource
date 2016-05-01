@@ -40,5 +40,8 @@ func main() {
 	err = inCommand.DownloadLogs(build)
 	common.FatalIf("can't download logs", err)
 
-	inCommand.SendResponse(build)
+	commit, _, err := travisClient.Commits.GetFromBuild(build.Id)
+	common.FatalIf("can't get commit", err)
+
+	inCommand.SendResponse(build, *commit)
 }
