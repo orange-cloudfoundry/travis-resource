@@ -51,7 +51,9 @@ func GetMetadatasFromBuild(build travis.Build, commit travis.Commit) ([]model.Me
 	metadatas := make([]model.Metadata, 0)
 	metadatas = append(metadatas, model.Metadata{"travis_succeeded", strconv.FormatBool(build.State == travis.SUCCEEDED_STATE)})
 	metadatas = append(metadatas, model.Metadata{"travis_build_state", build.State})
-	metadatas = append(metadatas, model.Metadata{"travis_started_at", build.StartedAt})
+	if build.State != travis.STATE_CREATED {
+		metadatas = append(metadatas, model.Metadata{"travis_started_at", build.StartedAt})
+	}
 	if build.State == travis.SUCCEEDED_STATE {
 		duration, _ := time.ParseDuration(strconv.Itoa(int(build.Duration)) + "s")
 		metadatas = append(metadatas, model.Metadata{

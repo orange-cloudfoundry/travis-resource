@@ -25,32 +25,66 @@ var _ = Describe("Common", func() {
 		})
 	})
 	Describe("GetMetadatasFromBuild", func() {
-
+		commit := travis.Commit{
+			Sha: "ref",
+			AuthorName: "arthurh",
+			CommittedAt: "now",
+			Message: "message",
+		}
 		Context("with build in error", func() {
 			build := travis.Build{
 				State: "errored",
+				StartedAt: "now",
 			}
-			expectedMetadata := []model.Metadata{model.Metadata{"travis_succeeded", "false"}, model.Metadata{"travis_build_state", "errored"}}
+			expectedMetadata := []model.Metadata{
+				model.Metadata{"travis_succeeded", "false"},
+				model.Metadata{"travis_build_state", "errored"},
+				model.Metadata{"travis_started_at", "now"},
+				model.Metadata{"commit_author", "arthurh"},
+				model.Metadata{"commit_author_date", "now"},
+				model.Metadata{"commit_ref", "ref"},
+				model.Metadata{"commit_message", "message"},
+			}
 			It("should give the actual state and travis suceeded to false", func() {
-				Expect(common.GetMetadatasFromBuild(build)).To(BeEquivalentTo(expectedMetadata))
+				Expect(common.GetMetadatasFromBuild(build, commit)).To(BeEquivalentTo(expectedMetadata))
 			})
 		})
 		Context("with started build", func() {
 			build := travis.Build{
 				State: "started",
+				StartedAt: "now",
 			}
-			expectedMetadata := []model.Metadata{model.Metadata{"travis_succeeded", "false"}, model.Metadata{"travis_build_state", "started"}}
+			expectedMetadata := []model.Metadata{
+				model.Metadata{"travis_succeeded", "false"},
+				model.Metadata{"travis_build_state", "started"},
+				model.Metadata{"travis_started_at", "now"},
+				model.Metadata{"commit_author", "arthurh"},
+				model.Metadata{"commit_author_date", "now"},
+				model.Metadata{"commit_ref", "ref"},
+				model.Metadata{"commit_message", "message"},
+			}
 			It("should give the actual state and travis suceeded to false", func() {
-				Expect(common.GetMetadatasFromBuild(build)).To(BeEquivalentTo(expectedMetadata))
+				Expect(common.GetMetadatasFromBuild(build, commit)).To(BeEquivalentTo(expectedMetadata))
 			})
 		})
 		Context("with build in success", func() {
 			build := travis.Build{
 				State: travis.SUCCEEDED_STATE,
+				Duration: uint(60),
+				StartedAt: "now",
 			}
-			expectedMetadata := []model.Metadata{model.Metadata{"travis_succeeded", "true"}, model.Metadata{"travis_build_state", travis.SUCCEEDED_STATE}}
+			expectedMetadata := []model.Metadata{
+				model.Metadata{"travis_succeeded", "true"},
+				model.Metadata{"travis_build_state", travis.SUCCEEDED_STATE},
+				model.Metadata{"travis_started_at", "now"},
+				model.Metadata{"travis_build_duration", "1m0s"},
+				model.Metadata{"commit_author", "arthurh"},
+				model.Metadata{"commit_author_date", "now"},
+				model.Metadata{"commit_ref", "ref"},
+				model.Metadata{"commit_message", "message"},
+			}
 			It("should give the actual state and travis suceeded to true", func() {
-				Expect(common.GetMetadatasFromBuild(build)).To(BeEquivalentTo(expectedMetadata))
+				Expect(common.GetMetadatasFromBuild(build, commit)).To(BeEquivalentTo(expectedMetadata))
 			})
 		})
 	})
