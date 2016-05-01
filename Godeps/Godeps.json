@@ -7,8 +7,16 @@
 	],
 	"Deps": [
 		{
+			"ImportPath": "github.com/Orange-OpenSource/db-dumper-cli-plugin/Godeps/_workspace/src/github.com/cheggaaa/pb",
+			"Rev": "88369811765036ef7afa9b0670364ace4aed8932"
+		},
+		{
 			"ImportPath": "github.com/fatih/structs",
 			"Rev": "73c4e3dc02a78deaba8640d5f3a8c236ec1352bf"
+		},
+		{
+			"ImportPath": "github.com/golang/mock/gomock",
+			"Rev": "bd3c8e81be01eef76d4b503f5e687d2d1354d2d9"
 		},
 		{
 			"ImportPath": "github.com/google/go-querystring/query",
@@ -18,6 +26,10 @@
 			"ImportPath": "github.com/oleiade/reflections",
 			"Comment": "0.1.2-2-g632977f",
 			"Rev": "632977f98cd34d217c4b57d0840ec188b3d3dcaf"
+		},
+		{
+			"ImportPath": "github.com/olekukonko/ts",
+			"Rev": "ecf753e7c962639ab5a1fb46f7da627d4c0a04b8"
 		},
 		{
 			"ImportPath": "github.com/onsi/ginkgo",

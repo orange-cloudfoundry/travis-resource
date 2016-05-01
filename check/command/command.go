@@ -3,34 +3,34 @@ package command
 import (
 	"github.com/Orange-OpenSource/travis-resource/travis"
 	"github.com/Orange-OpenSource/travis-resource/model"
-	"io"
-	"encoding/json"
 	"errors"
+	"github.com/Orange-OpenSource/travis-resource/messager"
 )
 
 type CheckCommand struct {
 	TravisClient *travis.Client
 	Request      model.CheckRequest
+	Messager     *messager.ResourceMessager
 }
 
-func (this *CheckCommand) SendResponse(buildNumber string, w io.Writer) {
+func (c *CheckCommand) SendResponse(buildNumber string) {
 	response := model.CheckResponse{model.Version{buildNumber}}
-	json.NewEncoder(w).Encode(response)
+	c.Messager.SendJsonResponse(response)
 }
-func (this *CheckCommand) GetBuildNumber() (string, error) {
+func (c *CheckCommand) GetBuildNumber() (string, error) {
 	var builds []travis.Build
 	var err error
-	if this.Request.Source.Branch != "" {
-		if this.Request.Source.CheckAllBuilds {
-			builds, _, _, _, err = this.TravisClient.Builds.ListFromRepositoryWithBranch(this.Request.Source.Repository, this.Request.Source.Branch, nil)
+	if c.Request.Source.Branch != "" {
+		if c.Request.Source.CheckAllBuilds {
+			builds, _, _, _, err = c.TravisClient.Builds.ListFromRepositoryWithBranch(c.Request.Source.Repository, c.Request.Source.Branch, nil)
 		} else {
-			builds, _, _, _, err = this.TravisClient.Builds.ListSucceededFromRepositoryWithBranch(this.Request.Source.Repository, this.Request.Source.Branch, nil)
+			builds, _, _, _, err = c.TravisClient.Builds.ListSucceededFromRepositoryWithBranch(c.Request.Source.Repository, c.Request.Source.Branch, nil)
 		}
 	} else {
-		if this.Request.Source.CheckAllBuilds {
-			builds, _, _, _, err = this.TravisClient.Builds.ListFromRepository(this.Request.Source.Repository, nil)
+		if c.Request.Source.CheckAllBuilds {
+			builds, _, _, _, err = c.TravisClient.Builds.ListFromRepository(c.Request.Source.Repository, nil)
 		} else {
-			builds, _, _, _, err = this.TravisClient.Builds.ListSucceededFromRepository(this.Request.Source.Repository, nil)
+			builds, _, _, _, err = c.TravisClient.Builds.ListSucceededFromRepository(c.Request.Source.Repository, nil)
 		}
 	}
 	if err != nil {

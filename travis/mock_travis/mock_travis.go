@@ -349,6 +349,17 @@ func (_mr *_MockJobsInterfaceRecorder) RawLog(arg0 interface{}) *gomock.Call {
 	return _mr.mock.ctrl.RecordCall(_mr.mock, "RawLog", arg0)
 }
 
+func (_m *MockJobsInterface) RawLogOnlyResponse(_param0 uint) (*http.Response, error) {
+	ret := _m.ctrl.Call(_m, "RawLogOnlyResponse", _param0)
+	ret0, _ := ret[0].(*http.Response)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+func (_mr *_MockJobsInterfaceRecorder) RawLogOnlyResponse(arg0 interface{}) *gomock.Call {
+	return _mr.mock.ctrl.RecordCall(_mr.mock, "RawLogOnlyResponse", arg0)
+}
+
 func (_m *MockJobsInterface) Restart(_param0 uint) (*http.Response, error) {
 	ret := _m.ctrl.Call(_m, "Restart", _param0)
 	ret0, _ := ret[0].(*http.Response)

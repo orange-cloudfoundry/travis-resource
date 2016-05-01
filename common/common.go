@@ -67,6 +67,7 @@ func FatalIf(doing string, err error) {
 		Fatal(doing + ": " + err.Error())
 	}
 }
+
 func StringInSlice(str string, list []string) bool {
 	for _, v := range list {
 		if v == str {

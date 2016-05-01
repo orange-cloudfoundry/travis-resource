@@ -7,6 +7,7 @@ import (
 	"errors"
 	"github.com/Orange-OpenSource/travis-resource/common"
 	. "github.com/Orange-OpenSource/travis-resource/check/command"
+	"github.com/Orange-OpenSource/travis-resource/messager"
 )
 
 func main() {
@@ -18,10 +19,10 @@ func main() {
 	}
 	travisClient, err := common.MakeTravisClient(request.Source)
 	common.FatalIf("failed to create travis client", err)
-	checkCommand := CheckCommand{travisClient, request}
+	checkCommand := CheckCommand{travisClient, request, messager.GetMessager()}
 
 	buildNumber, err := checkCommand.GetBuildNumber()
 	common.FatalIf("can't get build", err)
 
-	checkCommand.SendResponse(buildNumber, os.Stdout)
+	checkCommand.SendResponse(buildNumber)
 }

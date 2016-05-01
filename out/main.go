@@ -8,6 +8,7 @@ import (
 	"errors"
 	"github.com/Orange-OpenSource/travis-resource/travis"
 	. "github.com/Orange-OpenSource/travis-resource/out/command"
+	"github.com/Orange-OpenSource/travis-resource/messager"
 )
 
 func main() {
@@ -22,7 +23,7 @@ func main() {
 	common.FatalIf("failed to create travis client", err)
 
 	var build travis.Build
-	outCommand := &OutCommand{travisClient, request, ""}
+	outCommand := &OutCommand{travisClient, request, "", messager.GetMessager()}
 	outCommand.LoadRepository()
 
 	buildParam := outCommand.GetBuildParam()
@@ -33,5 +34,5 @@ func main() {
 	build, err = outCommand.Restart(build)
 	common.FatalIf("can't get build after restart", err)
 
-	outCommand.SendResponse(build, os.Stdout)
+	outCommand.SendResponse(build)
 }

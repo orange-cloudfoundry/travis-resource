@@ -25,6 +25,7 @@ type JobsInterface interface {
 	Cancel(uint) (*http.Response, error)
 	Restart(uint) (*http.Response, error)
 	RawLog(uint) ([]byte, *http.Response, error)
+	RawLogOnlyResponse(uint) (*http.Response, error)
 }
 // JobsService handles communication with the jobs
 // related methods of the Travis CI API.
@@ -238,4 +239,25 @@ func (js *JobsService) RawLog(id uint) ([]byte, *http.Response, error) {
 		return make([]byte, 0), resp, err
 	}
 	return logsBuffer.Bytes(), resp, err
+}
+func (js *JobsService) RawLogOnlyResponse(id uint) (*http.Response, error) {
+	u, err := urlWithOptions(fmt.Sprintf("/jobs/%d/log.txt", id), &RawOpt{true})
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := js.client.NewRequest("GET", u, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+	resp, err := js.client.Client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	err = checkResponse(resp)
+	if err != nil {
+		return resp, err
+	}
+	return resp, err
 }

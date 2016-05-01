@@ -9,6 +9,8 @@ import (
 	"github.com/Orange-OpenSource/travis-resource/travis"
 	"path/filepath"
 	"fmt"
+	"github.com/Orange-OpenSource/travis-resource/messager"
+	"github.com/Orange-OpenSource/db-dumper-cli-plugin/Godeps/_workspace/src/github.com/cheggaaa/pb"
 	"io"
 )
 
@@ -21,27 +23,27 @@ type InCommand struct {
 	TravisClient      *travis.Client
 	Request           model.InRequest
 	DestinationFolder string
+	Messager          *messager.ResourceMessager
 }
 
-func (this *InCommand) SendResponse(build travis.Build, w io.Writer) {
+func (c *InCommand) SendResponse(build travis.Build) {
 	response := model.InResponse{
 		Metadata: common.GetMetadatasFromBuild(build),
-		Version: model.Version{this.Request.Version.BuildNumber},
+		Version: model.Version{c.Request.Version.BuildNumber},
 	}
-	json.NewEncoder(w).Encode(response)
+	c.Messager.SendJsonResponse(response)
 }
-func (this *InCommand) GetBuildInfo() (travis.Build, travis.ListBuildsResponse, error) {
+func (c *InCommand) GetBuildInfo() (travis.Build, travis.ListBuildsResponse, error) {
 	var build travis.Build
 	var err error
 	var listBuild travis.ListBuildsResponse
 
-	builds, jobs, commits, _, err := this.TravisClient.Builds.ListFromRepository(this.Request.Source.Repository, &travis.BuildListOptions{
-		Number: this.Request.Version.BuildNumber,
+	builds, jobs, commits, _, err := c.TravisClient.Builds.ListFromRepository(c.Request.Source.Repository, &travis.BuildListOptions{
+		Number: c.Request.Version.BuildNumber,
 	})
 	if err != nil {
 		return build, listBuild, err
 	}
-	common.FatalIf("can't get build", err)
 	if len(builds) == 0 {
 		return build, listBuild, errors.New("there is no builds in travis")
 	}
@@ -53,8 +55,10 @@ func (this *InCommand) GetBuildInfo() (travis.Build, travis.ListBuildsResponse, 
 	}
 	return build, listBuild, nil
 }
-func (this *InCommand) WriteInBuildInfoFile(listBuild travis.ListBuildsResponse) error {
-	file, err := os.Create(filepath.Join(this.DestinationFolder, common.FILENAME_BUILD_INFO))
+func (c *InCommand) WriteInBuildInfoFile(listBuild travis.ListBuildsResponse) error {
+	fileLocation := filepath.Join(c.DestinationFolder, common.FILENAME_BUILD_INFO)
+	c.Messager.LogItLn("Writing build informations in file '%s' ...", fileLocation)
+	file, err := os.Create(fileLocation)
 	if err != nil {
 		return err
 	}
@@ -63,35 +67,52 @@ func (this *InCommand) WriteInBuildInfoFile(listBuild travis.ListBuildsResponse)
 	if err != nil {
 		return err
 	}
+	c.Messager.LogItLn("Build informations wrote: '%s'", string(listBuildJson))
 	file.Write(listBuildJson)
+	c.Messager.LogItLn("Finished to write in file '%s'.\n", fileLocation)
 	return nil
 }
-func (this *InCommand) DownloadLogs(build travis.Build) error {
-	if !this.Request.InParams.DownloadLogs {
+func (c *InCommand) DownloadLogs(build travis.Build) error {
+	if !c.Request.InParams.DownloadLogs {
 		return nil
 	}
-	err := os.MkdirAll(filepath.Join(this.DestinationFolder, LOGS_FOLDER), 0755)
+	logsLocation := filepath.Join(c.DestinationFolder, LOGS_FOLDER)
+	c.Messager.LogItLn("Downloading logs in folder '%s' ...", logsLocation)
+	err := os.MkdirAll(logsLocation, 0755)
 	if err != nil {
 		return err
 	}
 	for _, jobId := range build.JobIds {
-		err = this.DownloadLogFromJob(jobId)
+		err = c.DownloadLogFromJob(jobId)
 		if err != nil {
 			return err
 		}
 	}
+	c.Messager.LogItLn("Finished to download logs in folder '%s'.\n", logsLocation)
 	return nil
 }
-func (this *InCommand) DownloadLogFromJob(jobId uint) error {
-	file, err := os.Create(filepath.Join(this.DestinationFolder, LOGS_FOLDER, fmt.Sprintf(LOGS_FILENAME_PATTERN, jobId)))
+func (c *InCommand) DownloadLogFromJob(jobId uint) error {
+	logLocation := fmt.Sprintf(LOGS_FILENAME_PATTERN, jobId)
+	file, err := os.Create(filepath.Join(c.DestinationFolder, LOGS_FOLDER, logLocation))
 	if err != nil {
 		return err
 	}
 	defer file.Close()
-	logs, _, err := this.TravisClient.Jobs.RawLog(jobId)
+	c.Messager.LogItLn("\tDownloading log for job '%d' as file '%s' ...", jobId, logLocation)
+	resp, err := c.TravisClient.Jobs.RawLogOnlyResponse(jobId)
 	if err != nil {
 		return err
 	}
-	file.Write(logs)
+	defer resp.Body.Close()
+
+	bar := pb.New64(resp.ContentLength).SetUnits(pb.U_BYTES)
+	bar.Output = c.Messager.GetLogWriter()
+	bar.Start()
+	reader := bar.NewProxyReader(resp.Body)
+	_, err = io.Copy(file, reader)
+	if err != nil {
+		return err
+	}
+	c.Messager.LogItLn("\tFinished to download log for job '%d' as file '%s'.", jobId, logLocation)
 	return nil
 }

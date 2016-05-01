@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"github.com/Orange-OpenSource/travis-resource/common"
 	. "github.com/Orange-OpenSource/travis-resource/in/command"
+	"github.com/Orange-OpenSource/travis-resource/messager"
 )
 
 func main() {
@@ -21,13 +22,15 @@ func main() {
 	var request model.InRequest
 	err = json.NewDecoder(os.Stdin).Decode(&request)
 	common.FatalIf("failed to read request ", err)
+
 	if request.Source.Repository == "" {
 		common.FatalIf("can't get build", errors.New("there is no repository set"))
 	}
+
 	travisClient, err := common.MakeTravisClient(request.Source)
 	common.FatalIf("failed to create travis client", err)
 
-	inCommand := &InCommand{travisClient, request, destinationFolder}
+	inCommand := &InCommand{travisClient, request, destinationFolder, messager.GetMessager()}
 	build, listBuild, err := inCommand.GetBuildInfo()
 	common.FatalIf("can't get build", err)
 
@@ -37,5 +40,5 @@ func main() {
 	err = inCommand.DownloadLogs(build)
 	common.FatalIf("can't download logs", err)
 
-	inCommand.SendResponse(build, os.Stdout)
+	inCommand.SendResponse(build)
 }

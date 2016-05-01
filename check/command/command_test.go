@@ -10,6 +10,7 @@ import (
 	"github.com/Orange-OpenSource/travis-resource/common"
 	"github.com/Orange-OpenSource/travis-resource/model"
 	. "github.com/Orange-OpenSource/travis-resource/check/command"
+	"github.com/Orange-OpenSource/travis-resource/messager"
 )
 
 type GinkgoTestReporter struct{}
@@ -38,7 +39,7 @@ var _ = Describe("Check", func() {
 		travisClient, err = common.MakeTravisClient(model.Source{})
 		Expect(err).To(BeNil())
 		travisClient.Builds = mockBuilds
-		checkCommand = &CheckCommand{travisClient, model.CheckRequest{}}
+		checkCommand = &CheckCommand{travisClient, model.CheckRequest{}, messager.GetMessager()}
 	})
 	Describe("When user want to have the last build number", func() {
 
