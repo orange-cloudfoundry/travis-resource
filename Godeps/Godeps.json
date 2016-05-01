@@ -36,6 +36,10 @@
 			"Rev": "56b76bdf51f7708750eac80fa38b952bb9f32639"
 		},
 		{
+			"ImportPath": "github.com/mitchellh/colorstring",
+			"Rev": "61164e49940b423ba1f12ddbdf01632ac793e5e9"
+		},
+		{
 			"ImportPath": "github.com/oleiade/reflections",
 			"Comment": "0.1.2-2-g632977f",
 			"Rev": "632977f98cd34d217c4b57d0840ec188b3d3dcaf"

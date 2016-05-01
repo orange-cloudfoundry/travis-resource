@@ -57,7 +57,7 @@ func (c *InCommand) GetBuildInfo() (travis.Build, travis.ListBuildsResponse, err
 }
 func (c *InCommand) WriteInBuildInfoFile(listBuild travis.ListBuildsResponse) error {
 	fileLocation := filepath.Join(c.DestinationFolder, common.FILENAME_BUILD_INFO)
-	c.Messager.LogItLn("Writing build informations in file '%s' ...", fileLocation)
+	c.Messager.LogItLn("Writing build informations in file '[blue]%s[reset]' ...", fileLocation)
 	file, err := os.Create(fileLocation)
 	if err != nil {
 		return err
@@ -67,9 +67,9 @@ func (c *InCommand) WriteInBuildInfoFile(listBuild travis.ListBuildsResponse) er
 	if err != nil {
 		return err
 	}
-	c.Messager.LogItLn("Build informations wrote: '%s'", string(listBuildJson))
+	c.Messager.LogItLn("Build informations wrote: '[blue]%s[reset]'", string(listBuildJson))
 	file.Write(listBuildJson)
-	c.Messager.LogItLn("Finished to write in file '%s'.\n", fileLocation)
+	c.Messager.LogItLn("Finished to write in file '[blue]%s[reset]' .\n", fileLocation)
 	return nil
 }
 func (c *InCommand) DownloadLogs(build travis.Build) error {
@@ -77,7 +77,7 @@ func (c *InCommand) DownloadLogs(build travis.Build) error {
 		return nil
 	}
 	logsLocation := filepath.Join(c.DestinationFolder, LOGS_FOLDER)
-	c.Messager.LogItLn("Downloading logs in folder '%s' ...", logsLocation)
+	c.Messager.LogItLn("Downloading logs in folder '[blue]%s[reset]' ...", logsLocation)
 	err := os.MkdirAll(logsLocation, 0755)
 	if err != nil {
 		return err
@@ -88,7 +88,7 @@ func (c *InCommand) DownloadLogs(build travis.Build) error {
 			return err
 		}
 	}
-	c.Messager.LogItLn("Finished to download logs in folder '%s'.\n", logsLocation)
+	c.Messager.LogItLn("Finished to download logs in folder '[blue]%s[reset]' .\n", logsLocation)
 	return nil
 }
 func (c *InCommand) DownloadLogFromJob(jobId uint) error {
@@ -98,7 +98,7 @@ func (c *InCommand) DownloadLogFromJob(jobId uint) error {
 		return err
 	}
 	defer file.Close()
-	c.Messager.LogItLn("-------\nDownloading log for job '%s' as file '%s' ...", jobId, logLocation)
+	c.Messager.LogItLn("-------\nDownloading log for job '[blue]%d[reset]' as file '[blue]%s[reset]' ...", jobId, logLocation)
 	resp, err := c.TravisClient.Jobs.RawLogOnlyResponse(jobId)
 	if err != nil {
 		return err
@@ -113,6 +113,6 @@ func (c *InCommand) DownloadLogFromJob(jobId uint) error {
 	if err != nil {
 		return err
 	}
-	c.Messager.LogItLn("Finished to download log for job '%s' as file '%s'.\n-------", jobId, logLocation)
+	c.Messager.LogItLn("Finished to download log for job '[blue]%d[reset]' as file '[blue]%s[reset]' .\n-------", jobId, logLocation)
 	return nil
 }

@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 	"encoding/json"
-	"github.com/fatih/color"
+	"github.com/mitchellh/colorstring"
 )
 
 type ResourceMessager struct {
@@ -24,20 +24,13 @@ func (rl *ResourceMessager) LogIt(args ...interface{}) {
 	if !ok {
 		panic("Firt argument should be a string")
 	}
+	text = colorstring.Color(text)
 	if len(args) > 1 {
-		newArgs := rl.addColorToArgs(args[1:])
+		newArgs := args[1:]
 		fmt.Fprintf(rl.logWriter, text, newArgs...)
 	} else {
 		fmt.Fprint(rl.logWriter, text)
 	}
-}
-func (rl *ResourceMessager) addColorToArgs(args []interface{}) ([]interface{}) {
-	cyan := color.New(color.FgCyan).SprintFunc()
-	var newArgs []interface{} = make([]interface{}, len(args))
-	for index, arg := range args {
-		newArgs[index] = cyan(arg)
-	}
-	return newArgs
 }
 func (rl *ResourceMessager) LogItLn(args ...interface{}) {
 	var text string
