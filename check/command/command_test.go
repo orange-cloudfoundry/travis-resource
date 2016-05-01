@@ -50,7 +50,7 @@ var _ = Describe("Check", func() {
 					Repository: "myrepo",
 					CheckAllBuilds: false,
 				}
-				call = mockBuilds.EXPECT().ListSucceededFromRepository(gomock.Any(), gomock.Nil()).AnyTimes()
+				call = mockBuilds.EXPECT().ListFromRepositoryWithInfos(gomock.Any(), "", travis.STATE_PASSED, gomock.Nil()).AnyTimes()
 			})
 			It("expect to run the right travis call", func() {
 				checkCommand.GetBuildNumber()
@@ -64,7 +64,7 @@ var _ = Describe("Check", func() {
 					Repository: "myrepo",
 					CheckAllBuilds: true,
 				}
-				call = mockBuilds.EXPECT().ListFromRepository(gomock.Any(), gomock.Nil()).AnyTimes()
+				call = mockBuilds.EXPECT().ListFromRepositoryWithInfos(gomock.Any(), "", "", gomock.Nil()).AnyTimes()
 			})
 			It("expect to run the right travis call", func() {
 				checkCommand.GetBuildNumber()

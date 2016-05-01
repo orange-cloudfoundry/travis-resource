@@ -20,19 +20,15 @@ func (c *CheckCommand) SendResponse(buildNumber string) {
 func (c *CheckCommand) GetBuildNumber() (string, error) {
 	var builds []travis.Build
 	var err error
-	if c.Request.Source.Branch != "" {
-		if c.Request.Source.CheckAllBuilds {
-			builds, _, _, _, err = c.TravisClient.Builds.ListFromRepositoryWithBranch(c.Request.Source.Repository, c.Request.Source.Branch, nil)
-		} else {
-			builds, _, _, _, err = c.TravisClient.Builds.ListSucceededFromRepositoryWithBranch(c.Request.Source.Repository, c.Request.Source.Branch, nil)
-		}
-	} else {
-		if c.Request.Source.CheckAllBuilds {
-			builds, _, _, _, err = c.TravisClient.Builds.ListFromRepository(c.Request.Source.Repository, nil)
-		} else {
-			builds, _, _, _, err = c.TravisClient.Builds.ListSucceededFromRepository(c.Request.Source.Repository, nil)
-		}
+	var state string
+	state = travis.STATE_PASSED
+	if c.Request.Source.CheckOnState != "" {
+		state = c.Request.Source.CheckOnState
 	}
+	if c.Request.Source.CheckAllBuilds {
+		state = ""
+	}
+	builds, _, _, _, err = c.TravisClient.Builds.ListFromRepositoryWithInfos(c.Request.Source.Repository, c.Request.Source.Branch, state, nil)
 	if err != nil {
 		return "", err
 	}
