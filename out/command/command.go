@@ -42,7 +42,7 @@ func (c *OutCommand) SendResponse(build travis.Build) {
 }
 func (c *OutCommand) Restart(build travis.Build) (travis.Build, error) {
 	c.TravisClient.Builds.Restart(build.Id)
-	c.Messager.LogItLn("Build '%s' restarted.\n", build.Number)
+	c.Messager.LogItLn("Build '%s' on repository '%s' restarted, see details here: %s .\n", build.Number, c.Repository, c.GetBuildUrl(build))
 	if !c.Request.OutParams.SkipWait {
 		c.WaitBuild(build.Number)
 	}
@@ -51,13 +51,6 @@ func (c *OutCommand) Restart(build travis.Build) (travis.Build, error) {
 func (c *OutCommand) WaitBuild(buildNumber string) {
 	var build travis.Build
 	var err error
-	var travisUrl string
-	if c.Request.Source.Url != "" {
-		travisUrl = c.Request.Source.Url
-	} else {
-		travisUrl = common.GetTravisUrl(c.Request.Source.Pro)
-	}
-	travisUrl = common.GetTravisDashboardUrl(travisUrl)
 	c.Messager.LogIt("Wait build to finish on travis")
 	for {
 		build, err = c.TravisClient.Builds.GetFirstBuildFromBuildNumber(c.Repository, buildNumber)
@@ -71,8 +64,18 @@ func (c *OutCommand) WaitBuild(buildNumber string) {
 	c.Messager.LogIt(build.State)
 	if build.State != travis.SUCCEEDED_STATE {
 		common.FatalIf("Build '" + build.Number + "' failed",
-			errors.New("\n\tstate: " + build.State + "\n\tsee: " + travisUrl + c.Repository + "/builds/" + strconv.Itoa(int(build.Id))))
+			errors.New("\n\tstate: " + build.State + "\n\tsee: " + c.GetBuildUrl(build)))
 	}
+}
+func (c *OutCommand) GetBuildUrl(build travis.Build) string {
+	var travisUrl string
+	if c.Request.Source.Url != "" {
+		travisUrl = c.Request.Source.Url
+	} else {
+		travisUrl = common.GetTravisUrl(c.Request.Source.Pro)
+	}
+	travisUrl = common.GetTravisDashboardUrl(travisUrl)
+	return travisUrl + c.Repository + "/builds/" + strconv.Itoa(int(build.Id))
 }
 func (c *OutCommand) GetBuild(buildParam string) (travis.Build, error) {
 	var build travis.Build
