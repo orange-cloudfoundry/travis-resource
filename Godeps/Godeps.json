@@ -11,6 +11,11 @@
 			"Rev": "88369811765036ef7afa9b0670364ace4aed8932"
 		},
 		{
+			"ImportPath": "github.com/fatih/color",
+			"Comment": "v0.1-12-g9aae6aa",
+			"Rev": "9aae6aaa22315390f03959adca2c4d395b02fcef"
+		},
+		{
 			"ImportPath": "github.com/fatih/structs",
 			"Rev": "73c4e3dc02a78deaba8640d5f3a8c236ec1352bf"
 		},
@@ -21,6 +26,14 @@
 		{
 			"ImportPath": "github.com/google/go-querystring/query",
 			"Rev": "6bb77fe6f42b85397288d4f6f67ac72f8f400ee7"
+		},
+		{
+			"ImportPath": "github.com/mattn/go-colorable",
+			"Rev": "4af63d73f5bea08b682ad2cd198b1e607afd6be0"
+		},
+		{
+			"ImportPath": "github.com/mattn/go-isatty",
+			"Rev": "56b76bdf51f7708750eac80fa38b952bb9f32639"
 		},
 		{
 			"ImportPath": "github.com/oleiade/reflections",
@@ -175,6 +188,10 @@
 			"ImportPath": "github.com/onsi/gomega/types",
 			"Comment": "v1.0-91-g7ce781e",
 			"Rev": "7ce781ea776b2fd506491011353bded2e40c8467"
+		},
+		{
+			"ImportPath": "golang.org/x/sys/unix",
+			"Rev": "833a04a10549a95dc34458c195cbad61bbb6cb4d"
 		}
 	]
 }
