@@ -3,7 +3,6 @@ package command
 import (
 	"github.com/Orange-OpenSource/travis-resource/travis"
 	"github.com/Orange-OpenSource/travis-resource/model"
-	"errors"
 	"github.com/Orange-OpenSource/travis-resource/messager"
 )
 
@@ -14,7 +13,13 @@ type CheckCommand struct {
 }
 
 func (c *CheckCommand) SendResponse(buildNumber string) {
-	response := model.CheckResponse{model.Version{buildNumber}}
+	var response model.CheckResponse
+	if buildNumber != "" {
+		response = model.CheckResponse{model.Version{buildNumber}}
+	} else {
+		response = model.CheckResponse{}
+	}
+
 	c.Messager.SendJsonResponse(response)
 }
 func (c *CheckCommand) GetBuildNumber() (string, error) {
@@ -33,7 +38,7 @@ func (c *CheckCommand) GetBuildNumber() (string, error) {
 		return "", err
 	}
 	if len(builds) == 0 {
-		return "", errors.New("there is no builds in travis")
+		return "", nil
 	}
 	return builds[0].Number, nil
 }
