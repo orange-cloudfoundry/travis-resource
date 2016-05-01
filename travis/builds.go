@@ -15,8 +15,7 @@ import (
 	"errors"
 )
 
-var SUCCEEDED_STATE string = "passed"
-var RUNNING_STATE []string = []string{"created", "started"}
+
 // BuildsService handles communication with the builds
 // related methods of the Travis CI API.
 type BuildsInterface interface {
@@ -25,9 +24,7 @@ type BuildsInterface interface {
 	GetFirstBuildFromBuildNumber(string, string) (Build, error)
 	GetFirstFinishedBuild(string) (Build, error)
 	GetFirstFinishedBuildWithBranch(string, string) (Build, error)
-	ListSucceededFromRepository(string, *BuildListOptions) ([]Build, []Job, []Commit, *http.Response, error)
-	ListSucceededFromRepositoryWithBranch(string, string, *BuildListOptions) ([]Build, []Job, []Commit, *http.Response, error)
-	ListFromRepositoryWithBranch(string, string, *BuildListOptions) ([]Build, []Job, []Commit, *http.Response, error)
+	ListFromRepositoryWithInfos(string, string, string, *BuildListOptions) ([]Build, []Job, []Commit, *http.Response, error)
 	Get(uint) (*Build, []Job, *Commit, *http.Response, error)
 	Cancel(uint) (*http.Response, error)
 	Restart(uint) (*http.Response, error)
@@ -183,12 +180,17 @@ func stringInSlice(str string, list []string) bool {
 	return false
 }
 
-func (bs *BuildsService) ListSucceededFromRepository(slug string, opt *BuildListOptions) ([]Build, []Job, []Commit, *http.Response, error) {
+func (bs *BuildsService) ListFromRepositoryWithInfos(slug string, branch string, state string, opt *BuildListOptions) ([]Build, []Job, []Commit, *http.Response, error) {
 	u, err := urlWithOptions(fmt.Sprintf("/repos/%v/builds", slug), opt)
 	if err != nil {
 		return nil, nil, nil, nil, err
 	}
-
+	if state != "" {
+		state, err = getStateValue(state)
+		if err != nil {
+			return nil, nil, nil, nil, err
+		}
+	}
 	req, err := bs.client.NewRequest("GET", u, nil, nil)
 	if err != nil {
 		return nil, nil, nil, nil, err
@@ -199,86 +201,23 @@ func (bs *BuildsService) ListSucceededFromRepository(slug string, opt *BuildList
 	if err != nil {
 		return nil, nil, nil, resp, err
 	}
-	succeededBuilds := make([]Build, 0)
-	succeededCommits := make([]Commit, 0)
-	succeededJobs := make([]Job, 0)
+	builds := make([]Build, 0)
+	commits := make([]Commit, 0)
+	jobs := make([]Job, 0)
 	for index, build := range buildsResp.Builds {
-		if build.State != SUCCEEDED_STATE {
+		if (state != "" && build.State != state) || len(buildsResp.Commits) <= index ||
+		(branch != "" && buildsResp.Commits[index].Branch != branch) {
 			continue
 		}
-		succeededBuilds = append(succeededBuilds, build)
+		builds = append(builds, build)
+		commits = append(commits, buildsResp.Commits[index])
 		if len(buildsResp.Jobs) > index {
-			succeededJobs = append(succeededJobs, buildsResp.Jobs[index])
-		}
-		if len(buildsResp.Commits) > index {
-			succeededCommits = append(succeededCommits, buildsResp.Commits[index])
+			jobs = append(jobs, buildsResp.Jobs[index])
 		}
 	}
-	return succeededBuilds, succeededJobs, succeededCommits, resp, err
-}
-func (bs *BuildsService) ListSucceededFromRepositoryWithBranch(slug string, branch string, opt *BuildListOptions) ([]Build, []Job, []Commit, *http.Response, error) {
-	u, err := urlWithOptions(fmt.Sprintf("/repos/%v/builds", slug), opt)
-	if err != nil {
-		return nil, nil, nil, nil, err
-	}
-
-	req, err := bs.client.NewRequest("GET", u, nil, nil)
-	if err != nil {
-		return nil, nil, nil, nil, err
-	}
-
-	var buildsResp ListBuildsResponse
-	resp, err := bs.client.Do(req, &buildsResp)
-	if err != nil {
-		return nil, nil, nil, resp, err
-	}
-	succeededBuilds := make([]Build, 0)
-	succeededCommits := make([]Commit, 0)
-	succeededJobs := make([]Job, 0)
-	for index, build := range buildsResp.Builds {
-		if build.State != SUCCEEDED_STATE || len(buildsResp.Commits) <= index || buildsResp.Commits[index].Branch != branch {
-			continue
-		}
-		succeededBuilds = append(succeededBuilds, build)
-		succeededCommits = append(succeededCommits, buildsResp.Commits[index])
-		if len(buildsResp.Jobs) > index {
-			succeededJobs = append(succeededJobs, buildsResp.Jobs[index])
-		}
-	}
-	return succeededBuilds, succeededJobs, succeededCommits, resp, err
+	return builds, jobs, commits, resp, err
 }
 
-func (bs *BuildsService) ListFromRepositoryWithBranch(slug string, branch string, opt *BuildListOptions) ([]Build, []Job, []Commit, *http.Response, error) {
-	u, err := urlWithOptions(fmt.Sprintf("/repos/%v/builds", slug), opt)
-	if err != nil {
-		return nil, nil, nil, nil, err
-	}
-
-	req, err := bs.client.NewRequest("GET", u, nil, nil)
-	if err != nil {
-		return nil, nil, nil, nil, err
-	}
-
-	var buildsResp ListBuildsResponse
-	resp, err := bs.client.Do(req, &buildsResp)
-	if err != nil {
-		return nil, nil, nil, resp, err
-	}
-	succeededBuilds := make([]Build, 0)
-	succeededCommits := make([]Commit, 0)
-	succeededJobs := make([]Job, 0)
-	for index, build := range buildsResp.Builds {
-		if len(buildsResp.Commits) <= index || buildsResp.Commits[index].Branch != branch {
-			continue
-		}
-		succeededBuilds = append(succeededBuilds, build)
-		succeededCommits = append(succeededCommits, buildsResp.Commits[index])
-		if len(buildsResp.Jobs) > index {
-			succeededJobs = append(succeededJobs, buildsResp.Jobs[index])
-		}
-	}
-	return succeededBuilds, succeededJobs, succeededCommits, resp, err
-}
 // Get fetches a build based on the provided id.
 //
 // Travis CI API docs: http://docs.travis-ci.com/api/#builds

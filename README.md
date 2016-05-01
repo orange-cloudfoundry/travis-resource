@@ -8,7 +8,10 @@ Track travis builds and can trigger them.
 
 * `branch`: *Optional.* The branch to track. Defaults to the last build found on travis.
 
-* `check-all-builds`: *Optional.* If set to `true` it will retrieve all builds (not just succeeded ones). Defaults to `false`.
+* `check-all-builds`: *Optional.* If set to `true` it will retrieve all builds (not just passed ones). Defaults to `false`.
+
+* `check-on-state`: *Optional.* On which build's state check will be triggered, possible values are `created`, `started`, `passed`,
+`failed` and `errored`. Defaults to `passed`. **Note:** if `check-all-builds` is set to `true` this value is ignored.
 
 * `pro`: *Optional.* If set to `true` it will use travis pro api. Defaults to `false`.
 

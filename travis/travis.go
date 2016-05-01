@@ -20,7 +20,7 @@ import (
 	"net/url"
 	"reflect"
 	"strconv"
-
+	"errors"
 	"github.com/google/go-querystring/query"
 	"github.com/oleiade/reflections"
 )
@@ -35,8 +35,22 @@ const (
 	TRAVIS_API_PRO_URL string = "https://api.travis-ci.com/"
 
 	TRAVIS_RESPONSE_PER_PAGE uint64 = 25
+	STATE_CREATED = "created"
+	STATE_STARTED = "started"
+	STATE_PASSED = "passed"
+	STATE_FAILED = "failed"
+	STATE_ERRORED = "errored"
 )
 
+var STATES map[string]string = map[string]string{
+	STATE_CREATED: "created",
+	STATE_STARTED: "started",
+	STATE_PASSED:  "passed",
+	STATE_FAILED:  "failed",
+	STATE_ERRORED: "errored",
+}
+var SUCCEEDED_STATE string = STATES[STATE_PASSED]
+var RUNNING_STATE []string = []string{STATES[STATE_CREATED], STATES[STATE_STARTED]}
 // A Client manages communication with the Travis CI API.
 type Client struct {
 	// HTTP client used to communicate with the API
@@ -285,4 +299,10 @@ func (into *ListOptions) GetNextPage(from interface{}) error {
 	into.AfterNumber = uint(math.Max(float64(number), 0))
 
 	return nil
+}
+func getStateValue(state string) (string, error) {
+	if _, ok := STATES[state]; !ok {
+		return "", errors.New("State " + state + " is not valid.")
+	}
+	return STATES[state], nil
 }

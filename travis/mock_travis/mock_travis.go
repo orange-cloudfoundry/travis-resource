@@ -216,8 +216,8 @@ func (_mr *_MockBuildsInterfaceRecorder) ListFromRepository(arg0, arg1 interface
 	return _mr.mock.ctrl.RecordCall(_mr.mock, "ListFromRepository", arg0, arg1)
 }
 
-func (_m *MockBuildsInterface) ListFromRepositoryWithBranch(_param0 string, _param1 string, _param2 *travis.BuildListOptions) ([]travis.Build, []travis.Job, []travis.Commit, *http.Response, error) {
-	ret := _m.ctrl.Call(_m, "ListFromRepositoryWithBranch", _param0, _param1, _param2)
+func (_m *MockBuildsInterface) ListFromRepositoryWithInfos(_param0 string, _param1 string, _param2 string, _param3 *travis.BuildListOptions) ([]travis.Build, []travis.Job, []travis.Commit, *http.Response, error) {
+	ret := _m.ctrl.Call(_m, "ListFromRepositoryWithInfos", _param0, _param1, _param2, _param3)
 	ret0, _ := ret[0].([]travis.Build)
 	ret1, _ := ret[1].([]travis.Job)
 	ret2, _ := ret[2].([]travis.Commit)
@@ -226,36 +226,8 @@ func (_m *MockBuildsInterface) ListFromRepositoryWithBranch(_param0 string, _par
 	return ret0, ret1, ret2, ret3, ret4
 }
 
-func (_mr *_MockBuildsInterfaceRecorder) ListFromRepositoryWithBranch(arg0, arg1, arg2 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCall(_mr.mock, "ListFromRepositoryWithBranch", arg0, arg1, arg2)
-}
-
-func (_m *MockBuildsInterface) ListSucceededFromRepository(_param0 string, _param1 *travis.BuildListOptions) ([]travis.Build, []travis.Job, []travis.Commit, *http.Response, error) {
-	ret := _m.ctrl.Call(_m, "ListSucceededFromRepository", _param0, _param1)
-	ret0, _ := ret[0].([]travis.Build)
-	ret1, _ := ret[1].([]travis.Job)
-	ret2, _ := ret[2].([]travis.Commit)
-	ret3, _ := ret[3].(*http.Response)
-	ret4, _ := ret[4].(error)
-	return ret0, ret1, ret2, ret3, ret4
-}
-
-func (_mr *_MockBuildsInterfaceRecorder) ListSucceededFromRepository(arg0, arg1 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCall(_mr.mock, "ListSucceededFromRepository", arg0, arg1)
-}
-
-func (_m *MockBuildsInterface) ListSucceededFromRepositoryWithBranch(_param0 string, _param1 string, _param2 *travis.BuildListOptions) ([]travis.Build, []travis.Job, []travis.Commit, *http.Response, error) {
-	ret := _m.ctrl.Call(_m, "ListSucceededFromRepositoryWithBranch", _param0, _param1, _param2)
-	ret0, _ := ret[0].([]travis.Build)
-	ret1, _ := ret[1].([]travis.Job)
-	ret2, _ := ret[2].([]travis.Commit)
-	ret3, _ := ret[3].(*http.Response)
-	ret4, _ := ret[4].(error)
-	return ret0, ret1, ret2, ret3, ret4
-}
-
-func (_mr *_MockBuildsInterfaceRecorder) ListSucceededFromRepositoryWithBranch(arg0, arg1, arg2 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCall(_mr.mock, "ListSucceededFromRepositoryWithBranch", arg0, arg1, arg2)
+func (_mr *_MockBuildsInterfaceRecorder) ListFromRepositoryWithInfos(arg0, arg1, arg2, arg3 interface{}) *gomock.Call {
+	return _mr.mock.ctrl.RecordCall(_mr.mock, "ListFromRepositoryWithInfos", arg0, arg1, arg2, arg3)
 }
 
 func (_m *MockBuildsInterface) Restart(_param0 uint) (*http.Response, error) {

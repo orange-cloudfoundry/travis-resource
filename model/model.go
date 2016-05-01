@@ -8,6 +8,7 @@ type Source struct {
 	CheckAllBuilds bool     `json:"check-all-builds"`
 	Pro            bool     `json:"pro"`
 	Url            string   `json:"travis-url"`
+	CheckOnState   string   `json:"check-on-state"`
 }
 type OutParams struct {
 	Build      interface{}  `json:"build"`
