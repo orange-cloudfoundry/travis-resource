@@ -41,7 +41,7 @@ type OutRequest struct {
 type CheckResponse []Version
 type InResponse struct {
 	Metadata []Metadata   `json:"metadata"`
-	Version  []Version    `json:"version"`
+	Version  Version      `json:"version"`
 }
 
 type OutResponse struct {
