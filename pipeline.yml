@@ -12,7 +12,7 @@ resources:
       password: {{docker-hub-password}}
       repository: {{docker-hub-image}}
 jobs:
-  - name: publish-db-dumper-concourse
+  - name: publish-travis-resource-image
     public: true
     serial: true
     plan:
