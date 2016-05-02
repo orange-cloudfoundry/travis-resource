@@ -114,6 +114,6 @@ func (c *InCommand) DownloadLogFromJob(jobId uint) error {
 	if err != nil {
 		return err
 	}
-	c.Messager.LogItLn("Finished to download log for job '[blue]%d[reset]' as file '[blue]%s[reset]' .\n-------", jobId, logLocation)
+	c.Messager.LogItLn("\nFinished to download log for job '[blue]%d[reset]' as file '[blue]%s[reset]' .\n-------", jobId, logLocation)
 	return nil
 }

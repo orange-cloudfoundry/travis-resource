@@ -50,6 +50,15 @@ func (rl *ResourceMessager) GetLogWriter() (io.Writer) {
 func (rl *ResourceMessager) GetResponseWriter() (io.Writer) {
 	return rl.responseWriter
 }
+func (rl *ResourceMessager) FatalIf(doing string, err error) {
+	if err != nil {
+		rl.Fatal(doing + ": " + err.Error())
+	}
+}
+func (rl *ResourceMessager) Fatal(message string) {
+	fmt.Fprintln(rl.responseWriter, message)
+	os.Exit(1)
+}
 func GetMessager() (*ResourceMessager) {
 	if logger == nil {
 		logger = NewMessager(os.Stderr, os.Stdout)

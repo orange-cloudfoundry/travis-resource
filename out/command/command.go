@@ -55,7 +55,7 @@ func (c *OutCommand) WaitBuild(buildNumber string) {
 	c.Messager.LogIt("Wait build to finish on travis")
 	for {
 		build, err = c.TravisClient.Builds.GetFirstBuildFromBuildNumber(c.Repository, buildNumber)
-		common.FatalIf("can't get build after restart", err)
+		c.Messager.FatalIf("can't get build after restart", err)
 		if !common.StringInSlice(build.State, travis.RUNNING_STATE) {
 			break
 		}
@@ -64,7 +64,7 @@ func (c *OutCommand) WaitBuild(buildNumber string) {
 	}
 	c.Messager.LogIt(build.State)
 	if build.State != travis.SUCCEEDED_STATE {
-		common.FatalIf("Build '" + build.Number + "' failed",
+		c.Messager.FatalIf("Build '" + build.Number + "' failed",
 			errors.New("\n\tstate: " + build.State + "\n\tsee: " + c.GetBuildUrl(build)))
 	}
 }

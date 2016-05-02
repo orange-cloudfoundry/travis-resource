@@ -2,7 +2,6 @@ package common
 
 import (
 	"github.com/Orange-OpenSource/travis-resource/travis"
-	"os"
 	"net/http"
 	"github.com/Orange-OpenSource/travis-resource/model"
 	"time"
@@ -77,11 +76,6 @@ func GetTravisUrl(pro bool) (string) {
 func GetTravisDashboardUrl(url string) string {
 	return strings.Replace(url, "api.", "", 1)
 }
-func FatalIf(doing string, err error) {
-	if err != nil {
-		Fatal(doing + ": " + err.Error())
-	}
-}
 
 func StringInSlice(str string, list []string) bool {
 	for _, v := range list {
@@ -90,8 +84,4 @@ func StringInSlice(str string, list []string) bool {
 		}
 	}
 	return false
-}
-func Fatal(message string) {
-	println(message)
-	os.Exit(1)
 }
