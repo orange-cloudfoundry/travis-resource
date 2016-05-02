@@ -11,12 +11,13 @@ import (
 type ResourceMessager struct {
 	logWriter      io.Writer
 	responseWriter io.Writer
+	exitOnFatal    bool
 }
 
 var logger *ResourceMessager
 
 func NewMessager(logWriter, responseWriter io.Writer) (*ResourceMessager) {
-	return &ResourceMessager{logWriter, responseWriter}
+	return &ResourceMessager{logWriter, responseWriter, true}
 }
 func (rl *ResourceMessager) LogIt(args ...interface{}) {
 	var text string
@@ -57,7 +58,12 @@ func (rl *ResourceMessager) FatalIf(doing string, err error) {
 }
 func (rl *ResourceMessager) Fatal(message string) {
 	fmt.Fprintln(rl.responseWriter, message)
-	os.Exit(1)
+	if rl.exitOnFatal {
+		os.Exit(1)
+	}
+}
+func (rl *ResourceMessager) SetExitOnFatal(exitOnFatal bool) {
+	rl.exitOnFatal = exitOnFatal
 }
 func GetMessager() (*ResourceMessager) {
 	if logger == nil {

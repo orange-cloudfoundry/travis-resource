@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"fmt"
 	"github.com/Orange-OpenSource/travis-resource/messager"
-	"github.com/Orange-OpenSource/db-dumper-cli-plugin/Godeps/_workspace/src/github.com/cheggaaa/pb"
+	"github.com/cheggaaa/pb"
 	"io"
 )
 
@@ -46,7 +46,7 @@ func (c *InCommand) GetBuildInfo() (travis.Build, travis.ListBuildsResponse, err
 		return build, listBuild, err
 	}
 	if len(builds) == 0 {
-		return build, listBuild, errors.New("there is no builds in travis")
+		return build, listBuild, errors.New("this build doesn't exists in travis")
 	}
 	build = builds[0]
 	listBuild = travis.ListBuildsResponse{
@@ -84,15 +84,15 @@ func (c *InCommand) DownloadLogs(build travis.Build) error {
 		return err
 	}
 	for _, jobId := range build.JobIds {
-		err = c.DownloadLogFromJob(jobId)
+		err = c.downloadLogFromJob(jobId)
 		if err != nil {
 			return err
 		}
 	}
-	c.Messager.LogItLn("Finished to download logs in folder '[blue]%s[reset]' .\n", logsLocation)
+	c.Messager.LogItLn("Finished to download logs in folder '[blue]%s[reset]' .\n", LOGS_FOLDER)
 	return nil
 }
-func (c *InCommand) DownloadLogFromJob(jobId uint) error {
+func (c *InCommand) downloadLogFromJob(jobId uint) error {
 	logLocation := filepath.Join(LOGS_FOLDER, fmt.Sprintf(LOGS_FILENAME_PATTERN, jobId))
 	file, err := os.Create(filepath.Join(c.DestinationFolder, logLocation))
 	if err != nil {
