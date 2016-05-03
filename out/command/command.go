@@ -45,11 +45,11 @@ func (c *OutCommand) Restart(build travis.Build) (travis.Build, error) {
 	c.TravisClient.Builds.Restart(build.Id)
 	c.Messager.LogItLn("Build '%s' on repository '[blue]%s[reset]' restarted, see details here: [blue]%s[reset] .\n", build.Number, c.Repository, c.GetBuildUrl(build))
 	if !c.Request.OutParams.SkipWait {
-		c.WaitBuild(build.Number)
+		c.waitBuild(build.Number)
 	}
 	return c.TravisClient.Builds.GetFirstBuildFromBuildNumber(c.Repository, build.Number)
 }
-func (c *OutCommand) WaitBuild(buildNumber string) {
+func (c *OutCommand) waitBuild(buildNumber string) {
 	var build travis.Build
 	var err error
 	c.Messager.LogIt("Wait build to finish on travis")

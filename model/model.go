@@ -32,8 +32,8 @@ type CheckRequest struct {
 	Version Version `json:"version"`
 }
 type InRequest struct {
-	Source   Source  `json:"source"`
-	Version  Version `json:"version"`
+	Source   Source   `json:"source"`
+	Version  Version  `json:"version"`
 	InParams InParams `json:"params"`
 }
 type OutRequest struct {

@@ -8,12 +8,12 @@ import (
 	"github.com/onsi/gomega/gexec"
 )
 
-var inPath string
+var outPath string
 
 var _ = BeforeSuite(func() {
 	var err error
 
-	inPath, err = gexec.Build("github.com/Orange-OpenSource/travis-resource/in")
+	outPath, err = gexec.Build("github.com/Orange-OpenSource/travis-resource/out")
 	Expect(err).NotTo(HaveOccurred())
 })
 
@@ -23,5 +23,5 @@ var _ = AfterSuite(func() {
 
 func TestCheck(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "In Suite")
+	RunSpecs(t, "Out Suite")
 }

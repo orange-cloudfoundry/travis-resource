@@ -184,6 +184,21 @@ var _ = Describe("InCommand", func() {
 		})
 
 	})
+	Describe("When send the version and metadata to output", func() {
+		Context("With build and commit given", func() {
+			It("should give correct metadata and version", func() {
+				inCommand.SendResponse(build, commit)
+				responseWritter.Flush()
+				var reponseJson model.InResponse
+				err := json.Unmarshal(responseBuffer.Bytes(), &reponseJson)
+				Expect(err).To(BeNil())
+				Expect(reponseJson).To(BeEquivalentTo(model.InResponse{
+					Metadata: common.GetMetadatasFromBuild(build, commit),
+					Version: model.Version{build.Number},
+				}))
+			})
+		})
+	})
 	AfterEach(func() {
 		d, err := os.Open(tempDir)
 		if err != nil {
