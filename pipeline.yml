@@ -32,6 +32,8 @@ jobs:
       on_failure:
         put: slack-alert
         params:
+          text_file: notif-resource/slack-notification.txt
+          text: "$TEXT_FILE_CONTENT"
           channel: {{slack-channel}}
           username: {{slack-username}}
     - put: travis-resource-image
@@ -39,5 +41,7 @@ jobs:
         build: built-resource/
     - put: slack-alert
       params:
+        text_file: notif-resource/slack-notification.txt
+        text: "$TEXT_FILE_CONTENT"
         channel: {{slack-channel}}
         username: {{slack-username}}
