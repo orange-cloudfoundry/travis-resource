@@ -4,7 +4,7 @@ CW=$PWD
 mkdir notif-resource
 echo "" > $CW/notif-resource/output-ci.txt
 tail -f output-ci.txt&
-$CW/bin/ci &> $CW/notif-resource/output-ci.txt
+$CW/travis-resource-git/bin/ci &> $CW/notif-resource/output-ci.txt
 exit_code=$?
 
 exit $exit_code
