@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -x
 CW=$PWD
-mkdir notif-resource
+mkdir notif-resource &> /dev/null
 echo "" > $CW/notif-resource/output-ci.txt
-tail -f output-ci.txt&
+tail -f $CW/notif-resource/output-ci.txt&
 $CW/travis-resource-git/bin/ci &> $CW/notif-resource/output-ci.txt
 exit_code=$?
 
