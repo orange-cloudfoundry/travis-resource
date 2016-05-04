@@ -28,11 +28,12 @@ jobs:
     - get: travis-resource-git
       trigger: true
     - task: build-resource
-      file: travis-resource-git/build.yml
+      file: travis-resource-git/ci/build.yml
       on_failure:
         put: slack-alert
         params:
           text_file: notif-resource/output-ci.txt
+          icon_url: {{slack-failed-icon}}
           text: |
             [$BUILD_PIPELINE_NAME] Build $BUILD_NAME failed, see: $ATC_EXTERNAL_URL/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
 
@@ -44,6 +45,7 @@ jobs:
         build: built-resource/
     - put: slack-alert
       params:
+        icon_url: {{slack-success-icon}}
         text: "[$BUILD_PIPELINE_NAME] Build $BUILD_NAME passed, see: $ATC_EXTERNAL_URL/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME"
         channel: {{slack-channel}}
         username: {{slack-username}}
