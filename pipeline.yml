@@ -1,4 +1,13 @@
+resource_types:
+  - name: slack-notification
+    type: docker-image
+    source:
+      repository: cfcommunity/slack-notification-resource
 resources:
+  - name: slack-alert
+    type: slack-notification
+    source:
+      url: {{slack-url}}
   - name: travis-resource-git
     type: git
     source:
@@ -20,6 +29,15 @@ jobs:
       trigger: true
     - task: build-resource
       file: travis-resource-git/build.yml
+      on_failure:
+        put: slack-alert
+        params:
+          channel: {{slack-channel}}
+          username: {{slack-username}}
     - put: travis-resource-image
       params:
         build: built-resource/
+    - put: slack-alert
+      params:
+        channel: {{slack-channel}}
+        username: {{slack-username}}

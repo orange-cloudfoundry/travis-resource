@@ -11,5 +11,6 @@ inputs:
 - name: travis-resource-git
 outputs:
 - name: built-resource
+- name: notif-resource
 run:
-  path: travis-resource-git/bin/ci
+  path: travis-resource-git/bin/run_ci
