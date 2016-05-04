@@ -33,9 +33,8 @@ jobs:
         put: slack-alert
         params:
           text_file: notif-resource/output-ci.txt
-          icon_url: {{slack-failed-icon}}
           text: |
-            [$BUILD_PIPELINE_NAME] Build $BUILD_NAME failed, see: $ATC_EXTERNAL_URL/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+            ![success](https://rawgit.com/Orange-OpenSource/travis-resource/master/ci/images/concourse-red.png) [$BUILD_PIPELINE_NAME] Build $BUILD_NAME failed, see: $ATC_EXTERNAL_URL/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
 
             Result: $TEXT_FILE_CONTENT
           channel: {{slack-channel}}
@@ -45,7 +44,7 @@ jobs:
         build: built-resource/
     - put: slack-alert
       params:
-        icon_url: {{slack-success-icon}}
-        text: "[$BUILD_PIPELINE_NAME] Build $BUILD_NAME passed, see: $ATC_EXTERNAL_URL/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME"
+        text: |
+          ![success](https://rawgit.com/Orange-OpenSource/travis-resource/master/ci/images/concourse-green.png) [$BUILD_PIPELINE_NAME] Build $BUILD_NAME passed, see: $ATC_EXTERNAL_URL/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
         channel: {{slack-channel}}
         username: {{slack-username}}
