@@ -204,17 +204,24 @@ func (bs *BuildsService) ListFromRepositoryWithInfos(slug string, branch string,
 	}
 	builds := make([]Build, 0)
 	commits := make([]Commit, 0)
-	jobs := make([]Job, 0)
-	for index, build := range buildsResp.Builds {
-		if (state != "" && build.State != state) || len(buildsResp.Commits) <= index ||
-		(branch != "" && buildsResp.Commits[index].Branch != branch) ||
-		(branch_regex != "" && bs.checkBranchByRegex(branch_regex, buildsResp.Commits[index].Branch)) {
+	var jobs []Job
+	for _, build := range buildsResp.Builds {
+		if state != "" && build.State != state {
+			continue
+		}
+		commit, _, err := bs.client.Commits.GetFromBuild(build.Id)
+		if err != nil {
+			return nil, nil, nil, resp, err
+		}
+		if (branch != "" && commit.Branch != branch) ||
+		(branch_regex != "" && !bs.checkBranchByRegex(branch_regex, commit.Branch)) {
 			continue
 		}
 		builds = append(builds, build)
-		commits = append(commits, buildsResp.Commits[index])
-		if len(buildsResp.Jobs) > index {
-			jobs = append(jobs, buildsResp.Jobs[index])
+		commits = append(commits, *commit)
+		jobs, _, err = bs.client.Jobs.ListFromBuild(build.Id)
+		if err != nil {
+			return nil, nil, nil, resp, err
 		}
 	}
 	return builds, jobs, commits, resp, err
