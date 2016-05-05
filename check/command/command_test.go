@@ -82,7 +82,7 @@ var _ = Describe("CheckCommand", func() {
 					Repository: "myrepo",
 					CheckAllBuilds: false,
 				}
-				call = mockBuilds.EXPECT().ListFromRepositoryWithInfos(gomock.Any(), "", travis.STATE_PASSED, gomock.Nil()).AnyTimes()
+				call = mockBuilds.EXPECT().ListFromRepositoryWithInfos(gomock.Any(), "", "", travis.STATE_PASSED, gomock.Nil()).AnyTimes()
 			})
 			It("expect to run the right travis call", func() {
 				checkCommand.GetBuildNumber()
@@ -97,7 +97,7 @@ var _ = Describe("CheckCommand", func() {
 					CheckAllBuilds: false,
 					CheckOnState: travis.STATE_STARTED,
 				}
-				call = mockBuilds.EXPECT().ListFromRepositoryWithInfos(gomock.Any(), "", travis.STATE_STARTED, gomock.Nil()).AnyTimes()
+				call = mockBuilds.EXPECT().ListFromRepositoryWithInfos(gomock.Any(), "", "", travis.STATE_STARTED, gomock.Nil()).AnyTimes()
 			})
 			It("expect to run the right travis call", func() {
 				checkCommand.GetBuildNumber()
@@ -111,7 +111,7 @@ var _ = Describe("CheckCommand", func() {
 					Repository: "myrepo",
 					CheckAllBuilds: true,
 				}
-				call = mockBuilds.EXPECT().ListFromRepositoryWithInfos(gomock.Any(), "", "", gomock.Nil()).AnyTimes()
+				call = mockBuilds.EXPECT().ListFromRepositoryWithInfos(gomock.Any(), "", "", "", gomock.Nil()).AnyTimes()
 			})
 			It("expect to run the right travis call", func() {
 				checkCommand.GetBuildNumber()
@@ -126,7 +126,7 @@ var _ = Describe("CheckCommand", func() {
 					CheckAllBuilds: false,
 					Branch: "mybranch",
 				}
-				call = mockBuilds.EXPECT().ListFromRepositoryWithInfos(gomock.Any(), "mybranch", travis.STATE_PASSED, gomock.Nil()).AnyTimes()
+				call = mockBuilds.EXPECT().ListFromRepositoryWithInfos(gomock.Any(), "mybranch", "", travis.STATE_PASSED, gomock.Nil()).AnyTimes()
 			})
 			It("expect to run the right travis call", func() {
 				checkCommand.GetBuildNumber()
@@ -142,7 +142,7 @@ var _ = Describe("CheckCommand", func() {
 					Branch: "mybranch",
 					CheckOnState: travis.STATE_STARTED,
 				}
-				call = mockBuilds.EXPECT().ListFromRepositoryWithInfos(gomock.Any(), "mybranch", travis.STATE_STARTED, gomock.Nil()).AnyTimes()
+				call = mockBuilds.EXPECT().ListFromRepositoryWithInfos(gomock.Any(), "mybranch", "", travis.STATE_STARTED, gomock.Nil()).AnyTimes()
 			})
 			It("expect to run the right travis call", func() {
 				checkCommand.GetBuildNumber()
@@ -157,7 +157,7 @@ var _ = Describe("CheckCommand", func() {
 					CheckAllBuilds: true,
 					Branch: "mybranch",
 				}
-				call = mockBuilds.EXPECT().ListFromRepositoryWithInfos(gomock.Any(), "mybranch", "", gomock.Nil()).AnyTimes()
+				call = mockBuilds.EXPECT().ListFromRepositoryWithInfos(gomock.Any(), "mybranch", "", "", gomock.Nil()).AnyTimes()
 			})
 			It("expect to run the right travis call", func() {
 				checkCommand.GetBuildNumber()

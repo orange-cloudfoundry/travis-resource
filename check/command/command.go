@@ -33,7 +33,13 @@ func (c *CheckCommand) GetBuildNumber() (string, error) {
 	if c.Request.Source.CheckAllBuilds {
 		state = ""
 	}
-	builds, _, _, _, err = c.TravisClient.Builds.ListFromRepositoryWithInfos(c.Request.Source.Repository, c.Request.Source.Branch, state, nil)
+	builds, _, _, _, err = c.TravisClient.Builds.ListFromRepositoryWithInfos(
+		c.Request.Source.Repository,
+		c.Request.Source.Branch,
+		c.Request.Source.BranchRegex,
+		state,
+		nil,
+	)
 	if err != nil {
 		return "", err
 	}

@@ -3,6 +3,7 @@ package model
 type Source struct {
 	Repository     string   `json:"repository"`
 	Branch         string   `json:"branch"`
+	BranchRegex    string   `json:"branch-regex"`
 	GithubToken    string   `json:"github-token"`
 	TravisToken    string   `json:"travis-token"`
 	CheckAllBuilds bool     `json:"check-all-builds"`

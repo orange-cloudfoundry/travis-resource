@@ -216,8 +216,8 @@ func (_mr *_MockBuildsInterfaceRecorder) ListFromRepository(arg0, arg1 interface
 	return _mr.mock.ctrl.RecordCall(_mr.mock, "ListFromRepository", arg0, arg1)
 }
 
-func (_m *MockBuildsInterface) ListFromRepositoryWithInfos(_param0 string, _param1 string, _param2 string, _param3 *travis.BuildListOptions) ([]travis.Build, []travis.Job, []travis.Commit, *http.Response, error) {
-	ret := _m.ctrl.Call(_m, "ListFromRepositoryWithInfos", _param0, _param1, _param2, _param3)
+func (_m *MockBuildsInterface) ListFromRepositoryWithInfos(_param0 string, _param1 string, _param2 string, _param3 string, _param4 *travis.BuildListOptions) ([]travis.Build, []travis.Job, []travis.Commit, *http.Response, error) {
+	ret := _m.ctrl.Call(_m, "ListFromRepositoryWithInfos", _param0, _param1, _param2, _param3, _param4)
 	ret0, _ := ret[0].([]travis.Build)
 	ret1, _ := ret[1].([]travis.Job)
 	ret2, _ := ret[2].([]travis.Commit)
@@ -226,8 +226,8 @@ func (_m *MockBuildsInterface) ListFromRepositoryWithInfos(_param0 string, _para
 	return ret0, ret1, ret2, ret3, ret4
 }
 
-func (_mr *_MockBuildsInterfaceRecorder) ListFromRepositoryWithInfos(arg0, arg1, arg2, arg3 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCall(_mr.mock, "ListFromRepositoryWithInfos", arg0, arg1, arg2, arg3)
+func (_mr *_MockBuildsInterfaceRecorder) ListFromRepositoryWithInfos(arg0, arg1, arg2, arg3, arg4 interface{}) *gomock.Call {
+	return _mr.mock.ctrl.RecordCall(_mr.mock, "ListFromRepositoryWithInfos", arg0, arg1, arg2, arg3, arg4)
 }
 
 func (_m *MockBuildsInterface) Restart(_param0 uint) (*http.Response, error) {

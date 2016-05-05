@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"net/http"
 	"errors"
+	"regexp"
 )
 
 
@@ -24,7 +25,7 @@ type BuildsInterface interface {
 	GetFirstBuildFromBuildNumber(string, string) (Build, error)
 	GetFirstFinishedBuild(string) (Build, error)
 	GetFirstFinishedBuildWithBranch(string, string) (Build, error)
-	ListFromRepositoryWithInfos(string, string, string, *BuildListOptions) ([]Build, []Job, []Commit, *http.Response, error)
+	ListFromRepositoryWithInfos(string, string, string, string, *BuildListOptions) ([]Build, []Job, []Commit, *http.Response, error)
 	Get(uint) (*Build, []Job, *Commit, *http.Response, error)
 	Cancel(uint) (*http.Response, error)
 	Restart(uint) (*http.Response, error)
@@ -180,7 +181,7 @@ func stringInSlice(str string, list []string) bool {
 	return false
 }
 
-func (bs *BuildsService) ListFromRepositoryWithInfos(slug string, branch string, state string, opt *BuildListOptions) ([]Build, []Job, []Commit, *http.Response, error) {
+func (bs *BuildsService) ListFromRepositoryWithInfos(slug string, branch string, branch_regex string, state string, opt *BuildListOptions) ([]Build, []Job, []Commit, *http.Response, error) {
 	u, err := urlWithOptions(fmt.Sprintf("/repos/%v/builds", slug), opt)
 	if err != nil {
 		return nil, nil, nil, nil, err
@@ -206,7 +207,8 @@ func (bs *BuildsService) ListFromRepositoryWithInfos(slug string, branch string,
 	jobs := make([]Job, 0)
 	for index, build := range buildsResp.Builds {
 		if (state != "" && build.State != state) || len(buildsResp.Commits) <= index ||
-		(branch != "" && buildsResp.Commits[index].Branch != branch) {
+		(branch != "" && buildsResp.Commits[index].Branch != branch) ||
+		(branch_regex != "" && bs.checkBranchByRegex(branch_regex, buildsResp.Commits[index].Branch)) {
 			continue
 		}
 		builds = append(builds, build)
@@ -217,7 +219,13 @@ func (bs *BuildsService) ListFromRepositoryWithInfos(slug string, branch string,
 	}
 	return builds, jobs, commits, resp, err
 }
-
+func (bs *BuildsService) checkBranchByRegex(branchAsked, branch string) (bool) {
+	r, err := regexp.Compile(branchAsked)
+	if err != nil {
+		return false
+	}
+	return r.MatchString(branch)
+}
 // Get fetches a build based on the provided id.
 //
 // Travis CI API docs: http://docs.travis-ci.com/api/#builds
