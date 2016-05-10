@@ -51,7 +51,7 @@ var _ = Describe("OutCommand", func() {
 		build travis.Build = travis.Build{
 			Id: buildId,
 			State: travis.SUCCEEDED_STATE,
-			Duration: uint(60),
+			Duration: 60,
 			StartedAt: "now",
 			Number: buildNumber,
 			JobIds: []uint{jobId1, jobId2},
@@ -234,7 +234,7 @@ var _ = Describe("OutCommand", func() {
 			buildStarted := travis.Build{
 				Id: buildId,
 				State: travis.STATE_STARTED,
-				Duration: uint(60),
+				Duration: 60,
 				StartedAt: "now",
 				Number: buildNumber,
 				JobIds: []uint{jobId1, jobId2},

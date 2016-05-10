@@ -70,7 +70,7 @@ var _ = Describe("Common", func() {
 		Context("with build in success", func() {
 			build := travis.Build{
 				State: travis.SUCCEEDED_STATE,
-				Duration: uint(60),
+				Duration: 60,
 				StartedAt: "now",
 			}
 			expectedMetadata := []model.Metadata{

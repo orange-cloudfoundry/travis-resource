@@ -49,7 +49,7 @@ type Build struct {
 	State             string `json:"state,omitempty"`
 	StartedAt         string `json:"started_at,omitempty"`
 	FinishedAt        string `json:"finished_at,omitempty"`
-	Duration          uint   `json:"duration,omitempty"`
+	Duration          int    `json:"duration,omitempty"`
 	JobIds            []uint `json:"job_ids,omitempty"`
 	AfterNumber       uint   `json:"after_number,omitempty"`
 	EventType         string `json:"event_type,omitempty"`

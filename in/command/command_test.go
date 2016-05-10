@@ -49,7 +49,7 @@ var _ = Describe("InCommand", func() {
 		jobId2 uint = uint(2)
 		build travis.Build = travis.Build{
 			State: travis.SUCCEEDED_STATE,
-			Duration: uint(60),
+			Duration: 60,
 			StartedAt: "now",
 			JobIds: []uint{jobId1, jobId2},
 		}
