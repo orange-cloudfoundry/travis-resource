@@ -35,7 +35,7 @@ Find the last build triggered on travis for the repository set and branch (if gi
 
 Find information the last build triggered on travis for the repository set and and branch (if given) and place information about the build inside the destination folder.
 
-The name of this file placed in destination foler is `build-info.json` and will give information in this format:
+The name of this file placed in destination folder is `build-info.json` and will give information in this format:
 
 ```json
 {
