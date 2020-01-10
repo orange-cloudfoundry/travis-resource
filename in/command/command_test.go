@@ -87,9 +87,8 @@ var _ = Describe("InCommand", func() {
 	})
 	Describe("When getting build information", func() {
 		Context("with build found", func() {
-			var call *gomock.Call
 			BeforeEach(func() {
-				call = mockBuilds.EXPECT().ListFromRepository(repository, gomock.Any()).Return(
+				mockBuilds.EXPECT().ListFromRepository(repository, gomock.Any()).Return(
 					[]travis.Build{build},
 					[]travis.Job{job},
 					[]travis.Commit{commit},
@@ -109,9 +108,8 @@ var _ = Describe("InCommand", func() {
 			})
 		})
 		Context("with build not found", func() {
-			var call *gomock.Call
 			BeforeEach(func() {
-				call = mockBuilds.EXPECT().ListFromRepository(repository, gomock.Any()).Return(
+				mockBuilds.EXPECT().ListFromRepository(repository, gomock.Any()).Return(
 					[]travis.Build{},
 					[]travis.Job{job},
 					[]travis.Commit{commit},
