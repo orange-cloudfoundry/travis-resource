@@ -1,9 +1,11 @@
 package command
 
 import (
-	"github.com/Orange-OpenSource/travis-resource/travis"
-	"github.com/Orange-OpenSource/travis-resource/model"
+	"context"
+
 	"github.com/Orange-OpenSource/travis-resource/messager"
+	"github.com/Orange-OpenSource/travis-resource/model"
+	"github.com/shuheiktgw/go-travis"
 )
 
 type CheckCommand struct {
@@ -23,28 +25,31 @@ func (c *CheckCommand) SendResponse(buildNumber string) {
 	c.Messager.SendJsonResponse(response)
 }
 func (c *CheckCommand) GetBuildNumber() (string, error) {
-	var builds []travis.Build
-	var err error
-	var state string
-	state = travis.STATE_PASSED
+	state := travis.BuildStatePassed
 	if c.Request.Source.CheckOnState != "" {
 		state = c.Request.Source.CheckOnState
 	}
 	if c.Request.Source.CheckAllBuilds {
 		state = ""
 	}
-	builds, _, _, _, err = c.TravisClient.Builds.ListFromRepositoryWithInfos(
+
+	options := travis.BuildsByRepoOption{
+		BranchName: []string{c.Request.Source.Branch},
+		State:      []string{state},
+	}
+
+	builds, _, err := c.TravisClient.Builds.ListByRepoSlug(
+		context.Background(),
 		c.Request.Source.Repository,
-		c.Request.Source.Branch,
-		c.Request.Source.BranchRegex,
-		state,
-		nil,
+		&options,
 	)
+
 	if err != nil {
 		return "", err
 	}
 	if len(builds) == 0 {
 		return "", nil
 	}
-	return builds[0].Number, nil
+
+	return *builds[0].Number, nil
 }
