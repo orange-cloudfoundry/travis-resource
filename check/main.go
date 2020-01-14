@@ -25,8 +25,8 @@ func main() {
 	mes.FatalIf("failed to create travis client", err)
 	checkCommand := CheckCommand{travisClient, request, mes}
 
-	buildNumber, err := checkCommand.GetBuildNumber()
+	buildId, err := checkCommand.GetBuildId()
 	mes.FatalIf("can't get build", err)
 
-	checkCommand.SendResponse(buildNumber)
+	checkCommand.SendResponse(buildId)
 }
