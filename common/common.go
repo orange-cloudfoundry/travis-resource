@@ -30,7 +30,6 @@ func MakeTravisClient(ctx context.Context, request model.Source) (*travis.Client
 			return nil, err
 		}
 	} else {
-		fmt.Println(request.TravisToken)
 		travisClient = travis.NewClient(travisUrl, request.TravisToken)
 	}
 
