@@ -2,7 +2,6 @@ package command
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/Orange-OpenSource/travis-resource/messager"
 	"github.com/Orange-OpenSource/travis-resource/model"
@@ -15,9 +14,9 @@ type CheckCommand struct {
 	Messager     *messager.ResourceMessager
 }
 
-func (c *CheckCommand) SendResponse(buildId string) {
+func (c *CheckCommand) SendResponse(buildId uint) {
 	var response model.CheckResponse
-	if buildId != "" {
+	if buildId != 0 {
 		response = model.CheckResponse{model.Version{buildId}}
 	} else {
 		response = model.CheckResponse{}
@@ -25,7 +24,7 @@ func (c *CheckCommand) SendResponse(buildId string) {
 
 	c.Messager.SendJsonResponse(response)
 }
-func (c *CheckCommand) GetBuildId() (string, error) {
+func (c *CheckCommand) GetBuildId() (uint, error) {
 	state := travis.BuildStatePassed
 	if c.Request.Source.CheckOnState != "" {
 		state = c.Request.Source.CheckOnState
@@ -46,11 +45,11 @@ func (c *CheckCommand) GetBuildId() (string, error) {
 	)
 
 	if err != nil {
-		return "", err
+		return 0, err
 	}
 	if len(builds) == 0 {
-		return "", nil
+		return 0, nil
 	}
 
-	return fmt.Sprint(*builds[0].Id), nil
+	return *builds[0].Id, nil
 }

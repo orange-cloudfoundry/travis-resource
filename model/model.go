@@ -21,7 +21,7 @@ type InParams struct {
 	DownloadLogs bool `json:"download-logs"`
 }
 type Version struct {
-	BuildNumber string `json:"build"`
+	BuildId uint `json:"build"`
 }
 
 type Metadata struct {
