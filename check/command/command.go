@@ -2,6 +2,7 @@ package command
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/Orange-OpenSource/travis-resource/messager"
 	"github.com/Orange-OpenSource/travis-resource/model"
@@ -17,7 +18,7 @@ type CheckCommand struct {
 func (c *CheckCommand) SendResponse(buildId uint) {
 	var response model.CheckResponse
 	if buildId != 0 {
-		response = model.CheckResponse{model.Version{buildId}}
+		response = model.CheckResponse{model.Version{fmt.Sprint(buildId)}}
 	} else {
 		response = model.CheckResponse{}
 	}

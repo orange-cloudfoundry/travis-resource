@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/Orange-OpenSource/travis-resource/common"
 	"github.com/Orange-OpenSource/travis-resource/messager"
@@ -31,7 +32,7 @@ func (c *InCommand) SendResponse(build *travis.Build) {
 
 	response := model.InResponse{
 		Metadata: common.GetMetadatasFromBuild(*build),
-		Version:  model.Version{*build.Id},
+		Version:  model.Version{fmt.Sprint(*build.Id)},
 	}
 	c.Messager.SendJsonResponse(response)
 }
@@ -43,7 +44,8 @@ func (c *InCommand) GetBuildInfo(ctx context.Context) (*travis.Build, error) {
 		Include: []string{"build.commit"},
 	}
 
-	build, _, err = c.TravisClient.Builds.Find(ctx, c.Request.Version.BuildId, &options)
+	buildId, _ := strconv.ParseUint(c.Request.Version.BuildId, 10, 32)
+	build, _, err = c.TravisClient.Builds.Find(ctx, uint(buildId), &options)
 	if err != nil {
 		return build, err
 	}
