@@ -35,7 +35,7 @@ func MakeTravisClient(ctx context.Context, request model.Source) (*travis.Client
 
 	return travisClient, nil
 }
-func GetMetadatasFromBuild(build travis.Build, commit travis.Commit) []model.Metadata {
+func GetMetadatasFromBuild(build travis.Build) []model.Metadata {
 	metadatas := make([]model.Metadata, 0)
 	metadatas = append(metadatas, model.Metadata{"travis_succeeded", strconv.FormatBool(*build.State == travis.BuildStatePassed)})
 	metadatas = append(metadatas, model.Metadata{"travis_build_state", *build.State})
@@ -49,10 +49,10 @@ func GetMetadatasFromBuild(build travis.Build, commit travis.Commit) []model.Met
 			Value: duration.String(),
 		})
 	}
-	metadatas = append(metadatas, model.Metadata{"commit_author", commit.Author.Name})
-	metadatas = append(metadatas, model.Metadata{"commit_author_date", *commit.CommittedAt})
-	metadatas = append(metadatas, model.Metadata{"commit_ref", *commit.Sha})
-	metadatas = append(metadatas, model.Metadata{"commit_message", *commit.Message})
+	metadatas = append(metadatas, model.Metadata{"commit_author", build.Commit.Author.Name})
+	metadatas = append(metadatas, model.Metadata{"commit_author_date", *build.Commit.CommittedAt})
+	metadatas = append(metadatas, model.Metadata{"commit_ref", *build.Commit.Sha})
+	metadatas = append(metadatas, model.Metadata{"commit_message", *build.Commit.Message})
 
 	return metadatas
 }
