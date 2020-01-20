@@ -1,22 +1,23 @@
 package command_test
 
 import (
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-	"github.com/golang/mock/gomock"
-	"fmt"
-	"github.com/Orange-OpenSource/travis-resource/travis/mock_travis"
-	"github.com/Orange-OpenSource/travis-resource/travis"
-	"github.com/Orange-OpenSource/travis-resource/common"
-	"github.com/Orange-OpenSource/travis-resource/model"
-	. "github.com/Orange-OpenSource/travis-resource/out/command"
-	"github.com/Orange-OpenSource/travis-resource/messager"
-	"bytes"
 	"bufio"
+	"bytes"
+	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
-	"encoding/json"
 	"strconv"
+
+	"github.com/Orange-OpenSource/travis-resource/common"
+	"github.com/Orange-OpenSource/travis-resource/messager"
+	"github.com/Orange-OpenSource/travis-resource/model"
+	. "github.com/Orange-OpenSource/travis-resource/out/command"
+	"github.com/Orange-OpenSource/travis-resource/travis/mock_travis"
+	"github.com/golang/mock/gomock"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+	"github.com/shuheiktgw/go-travis"
 )
 
 type GinkgoTestReporter struct{}
@@ -31,36 +32,36 @@ func (g GinkgoTestReporter) Fatalf(format string, args ...interface{}) {
 
 var _ = Describe("OutCommand", func() {
 	var (
-		t GinkgoTestReporter
-		mockCtrl *gomock.Controller
-		mockBuilds *mock_travis.MockBuildsInterface
-		mockJobs *mock_travis.MockJobsInterface
-		travisClient *travis.Client
-		outCommand *OutCommand
-		responseBuffer bytes.Buffer
+		t               GinkgoTestReporter
+		mockCtrl        *gomock.Controller
+		mockBuilds      *mock_travis.MockBuildsInterface
+		mockJobs        *mock_travis.MockJobsInterface
+		travisClient    *travis.Client
+		outCommand      *OutCommand
+		responseBuffer  bytes.Buffer
 		responseWritter *bufio.Writer
-		logBuffer bytes.Buffer
-		logWritter *bufio.Writer
-		tempDir string
-		outRequest model.OutRequest
-		repository string = "myrepo"
-		jobId1 uint = uint(1)
-		jobId2 uint = uint(2)
-		buildId uint = 1234
-		buildNumber = "12"
-		build travis.Build = travis.Build{
-			Id: buildId,
-			State: travis.SUCCEEDED_STATE,
-			Duration: 60,
+		logBuffer       bytes.Buffer
+		logWritter      *bufio.Writer
+		tempDir         string
+		outRequest      model.OutRequest
+		repository      string       = "myrepo"
+		jobId1          uint         = uint(1)
+		jobId2          uint         = uint(2)
+		buildId         uint         = 1234
+		buildNumber                  = "12"
+		build           travis.Build = travis.Build{
+			Id:        buildId,
+			State:     travis.SUCCEEDED_STATE,
+			Duration:  60,
 			StartedAt: "now",
-			Number: buildNumber,
-			JobIds: []uint{jobId1, jobId2},
+			Number:    buildNumber,
+			JobIds:    []uint{jobId1, jobId2},
 		}
 		commit travis.Commit = travis.Commit{
-			Sha: "ref",
-			AuthorName: "arthurh",
+			Sha:         "ref",
+			AuthorName:  "arthurh",
 			CommittedAt: "now",
-			Message: "message",
+			Message:     "message",
 		}
 	)
 
@@ -83,7 +84,7 @@ var _ = Describe("OutCommand", func() {
 				Repository: repository,
 			},
 			OutParams: model.OutParams{},
-			Version: model.Version{buildNumber},
+			Version:   model.Version{buildNumber},
 		}
 		outCommand = &OutCommand{travisClient, outRequest, repository, messager.NewMessager(logWritter, responseWritter)}
 	})
@@ -232,12 +233,12 @@ var _ = Describe("OutCommand", func() {
 		})
 		Context("And waiting the build to finish", func() {
 			buildStarted := travis.Build{
-				Id: buildId,
-				State: travis.STATE_STARTED,
-				Duration: 60,
+				Id:        buildId,
+				State:     travis.STATE_STARTED,
+				Duration:  60,
 				StartedAt: "now",
-				Number: buildNumber,
-				JobIds: []uint{jobId1, jobId2},
+				Number:    buildNumber,
+				JobIds:    []uint{jobId1, jobId2},
 			}
 			It("Should return the build with new informations", func() {
 				outCommand.Request.OutParams.SkipWait = false
@@ -259,7 +260,7 @@ var _ = Describe("OutCommand", func() {
 				Expect(err).To(BeNil())
 				Expect(reponseJson).To(BeEquivalentTo(model.InResponse{
 					Metadata: common.GetMetadatasFromBuild(build, commit),
-					Version: model.Version{build.Number},
+					Version:  model.Version{build.Number},
 				}))
 			})
 		})
