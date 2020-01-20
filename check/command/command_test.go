@@ -1,19 +1,20 @@
 package command_test
 
 import (
+	"bufio"
+	"bytes"
+	"encoding/json"
+	"fmt"
+
+	. "github.com/Orange-OpenSource/travis-resource/check/command"
+	"github.com/Orange-OpenSource/travis-resource/common"
+	"github.com/Orange-OpenSource/travis-resource/messager"
+	"github.com/Orange-OpenSource/travis-resource/model"
+	"github.com/Orange-OpenSource/travis-resource/travis/mock_travis"
+	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/golang/mock/gomock"
-	"fmt"
-	"github.com/Orange-OpenSource/travis-resource/travis/mock_travis"
-	"github.com/Orange-OpenSource/travis-resource/travis"
-	"github.com/Orange-OpenSource/travis-resource/common"
-	"github.com/Orange-OpenSource/travis-resource/model"
-	. "github.com/Orange-OpenSource/travis-resource/check/command"
-	"github.com/Orange-OpenSource/travis-resource/messager"
-	"bytes"
-	"bufio"
-	"encoding/json"
+	"github.com/shuheiktgw/go-travis"
 )
 
 type GinkgoTestReporter struct{}
@@ -28,15 +29,15 @@ func (g GinkgoTestReporter) Fatalf(format string, args ...interface{}) {
 
 var _ = Describe("CheckCommand", func() {
 	var (
-		t GinkgoTestReporter
-		mockCtrl *gomock.Controller
-		mockBuilds *mock_travis.MockBuildsInterface
-		travisClient *travis.Client
-		checkCommand *CheckCommand
-		responseBuffer bytes.Buffer
+		t               GinkgoTestReporter
+		mockCtrl        *gomock.Controller
+		mockBuilds      *mock_travis.MockBuildsInterface
+		travisClient    *travis.Client
+		checkCommand    *CheckCommand
+		responseBuffer  bytes.Buffer
 		responseWritter *bufio.Writer
-		logBuffer bytes.Buffer
-		logWritter *bufio.Writer
+		logBuffer       bytes.Buffer
+		logWritter      *bufio.Writer
 	)
 
 	BeforeEach(func() {
@@ -79,7 +80,7 @@ var _ = Describe("CheckCommand", func() {
 			var call *gomock.Call
 			BeforeEach(func() {
 				checkCommand.Request.Source = model.Source{
-					Repository: "myrepo",
+					Repository:     "myrepo",
 					CheckAllBuilds: false,
 				}
 				call = mockBuilds.EXPECT().ListFromRepositoryWithInfos(gomock.Any(), "", "", travis.STATE_PASSED, gomock.Nil()).AnyTimes()
@@ -93,9 +94,9 @@ var _ = Describe("CheckCommand", func() {
 			var call *gomock.Call
 			BeforeEach(func() {
 				checkCommand.Request.Source = model.Source{
-					Repository: "myrepo",
+					Repository:     "myrepo",
 					CheckAllBuilds: false,
-					CheckOnState: travis.STATE_STARTED,
+					CheckOnState:   travis.STATE_STARTED,
 				}
 				call = mockBuilds.EXPECT().ListFromRepositoryWithInfos(gomock.Any(), "", "", travis.STATE_STARTED, gomock.Nil()).AnyTimes()
 			})
@@ -108,7 +109,7 @@ var _ = Describe("CheckCommand", func() {
 			var call *gomock.Call
 			BeforeEach(func() {
 				checkCommand.Request.Source = model.Source{
-					Repository: "myrepo",
+					Repository:     "myrepo",
 					CheckAllBuilds: true,
 				}
 				call = mockBuilds.EXPECT().ListFromRepositoryWithInfos(gomock.Any(), "", "", "", gomock.Nil()).AnyTimes()
@@ -122,9 +123,9 @@ var _ = Describe("CheckCommand", func() {
 			var call *gomock.Call
 			BeforeEach(func() {
 				checkCommand.Request.Source = model.Source{
-					Repository: "myrepo",
+					Repository:     "myrepo",
 					CheckAllBuilds: false,
-					Branch: "mybranch",
+					Branch:         "mybranch",
 				}
 				call = mockBuilds.EXPECT().ListFromRepositoryWithInfos(gomock.Any(), "mybranch", "", travis.STATE_PASSED, gomock.Nil()).AnyTimes()
 			})
@@ -137,10 +138,10 @@ var _ = Describe("CheckCommand", func() {
 			var call *gomock.Call
 			BeforeEach(func() {
 				checkCommand.Request.Source = model.Source{
-					Repository: "myrepo",
+					Repository:     "myrepo",
 					CheckAllBuilds: false,
-					Branch: "mybranch",
-					CheckOnState: travis.STATE_STARTED,
+					Branch:         "mybranch",
+					CheckOnState:   travis.STATE_STARTED,
 				}
 				call = mockBuilds.EXPECT().ListFromRepositoryWithInfos(gomock.Any(), "mybranch", "", travis.STATE_STARTED, gomock.Nil()).AnyTimes()
 			})
@@ -153,9 +154,9 @@ var _ = Describe("CheckCommand", func() {
 			var call *gomock.Call
 			BeforeEach(func() {
 				checkCommand.Request.Source = model.Source{
-					Repository: "myrepo",
+					Repository:     "myrepo",
 					CheckAllBuilds: true,
-					Branch: "mybranch",
+					Branch:         "mybranch",
 				}
 				call = mockBuilds.EXPECT().ListFromRepositoryWithInfos(gomock.Any(), "mybranch", "", "", gomock.Nil()).AnyTimes()
 			})

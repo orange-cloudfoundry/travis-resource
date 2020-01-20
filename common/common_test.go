@@ -1,11 +1,11 @@
 package common_test
 
 import (
+	"github.com/Orange-OpenSource/travis-resource/common"
+	"github.com/Orange-OpenSource/travis-resource/model"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/Orange-OpenSource/travis-resource/common"
-	"github.com/Orange-OpenSource/travis-resource/travis"
-	"github.com/Orange-OpenSource/travis-resource/model"
+	"github.com/shuheiktgw/go-travis"
 )
 
 var _ = Describe("Common", func() {
@@ -25,16 +25,22 @@ var _ = Describe("Common", func() {
 		})
 	})
 	Describe("GetMetadatasFromBuild", func() {
-		commit := travis.Commit{
-			Sha: "ref",
-			AuthorName: "arthurh",
-			CommittedAt: "now",
-			Message: "message",
+		sha, committedAt, message := "ref", "now", "message"
+		author := travis.Author{
+			Name: "arthurh",
 		}
+		commit := travis.Commit{
+			Sha:         &sha,
+			Author:      &author,
+			CommittedAt: &committedAt,
+			Message:     &message,
+		}
+
 		Context("with build in error", func() {
+			state, startedAt := "errored", "now"
 			build := travis.Build{
-				State: "errored",
-				StartedAt: "now",
+				State:     &state,
+				StartedAt: &startedAt,
 			}
 			expectedMetadata := []model.Metadata{
 				model.Metadata{"travis_succeeded", "false"},
@@ -51,7 +57,7 @@ var _ = Describe("Common", func() {
 		})
 		Context("with started build", func() {
 			build := travis.Build{
-				State: "started",
+				State:     "started",
 				StartedAt: "now",
 			}
 			expectedMetadata := []model.Metadata{
@@ -69,8 +75,8 @@ var _ = Describe("Common", func() {
 		})
 		Context("with build in success", func() {
 			build := travis.Build{
-				State: travis.SUCCEEDED_STATE,
-				Duration: 60,
+				State:     travis.SUCCEEDED_STATE,
+				Duration:  60,
 				StartedAt: "now",
 			}
 			expectedMetadata := []model.Metadata{

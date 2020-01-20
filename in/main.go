@@ -1,16 +1,19 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
 	"errors"
 	"os"
-	"github.com/Orange-OpenSource/travis-resource/model"
-	"encoding/json"
+
 	"github.com/Orange-OpenSource/travis-resource/common"
 	. "github.com/Orange-OpenSource/travis-resource/in/command"
 	"github.com/Orange-OpenSource/travis-resource/messager"
+	"github.com/Orange-OpenSource/travis-resource/model"
 )
 
 func main() {
+	ctx := context.Background()
 	mes := messager.GetMessager()
 	if len(os.Args) <= 1 {
 		mes.FatalIf("error in command argument", errors.New("you must pass a folder as a first argument"))
@@ -28,21 +31,18 @@ func main() {
 		mes.FatalIf("can't get build", errors.New("there is no repository set"))
 	}
 
-	travisClient, err := common.MakeTravisClient(request.Source)
+	travisClient, err := common.MakeTravisClient(ctx, request.Source)
 	mes.FatalIf("failed to create travis client", err)
 
 	inCommand := &InCommand{travisClient, request, destinationFolder, mes}
-	build, listBuild, err := inCommand.GetBuildInfo()
+	build, err := inCommand.GetBuildInfo(ctx)
 	mes.FatalIf("can't get build", err)
 
-	err = inCommand.WriteInBuildInfoFile(listBuild)
+	err = inCommand.WriteInBuildInfoFile(build)
 	mes.FatalIf("can't create file build info", err)
 
-	err = inCommand.DownloadLogs(build)
+	err = inCommand.DownloadLogs(ctx, build)
 	mes.FatalIf("can't download logs", err)
 
-	commit, _, err := travisClient.Commits.GetFromBuild(build.Id)
-	mes.FatalIf("can't get commit", err)
-
-	inCommand.SendResponse(build, *commit)
+	inCommand.SendResponse(build)
 }

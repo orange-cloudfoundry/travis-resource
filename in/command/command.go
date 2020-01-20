@@ -1,22 +1,24 @@
 package command
 
 import (
-	"errors"
-	"os"
-	"github.com/Orange-OpenSource/travis-resource/model"
+	"context"
 	"encoding/json"
-	"github.com/Orange-OpenSource/travis-resource/common"
-	"github.com/Orange-OpenSource/travis-resource/travis"
-	"path/filepath"
 	"fmt"
-	"github.com/Orange-OpenSource/travis-resource/messager"
-	"github.com/cheggaaa/pb"
 	"io"
+	"os"
+	"path/filepath"
+	"strconv"
+
+	"github.com/Orange-OpenSource/travis-resource/common"
+	"github.com/Orange-OpenSource/travis-resource/messager"
+	"github.com/Orange-OpenSource/travis-resource/model"
+	"github.com/cheggaaa/pb"
+	"github.com/shuheiktgw/go-travis"
 )
 
 const (
-	LOGS_FOLDER string = "travis-logs"
-	LOGS_FILENAME_PATTERN = "job-%d.log"
+	LOGS_FOLDER           string = "travis-logs"
+	LOGS_FILENAME_PATTERN        = "job-%d.log"
 )
 
 type InCommand struct {
@@ -26,37 +28,31 @@ type InCommand struct {
 	Messager          *messager.ResourceMessager
 }
 
-func (c *InCommand) SendResponse(build travis.Build, commit travis.Commit) {
+func (c *InCommand) SendResponse(build *travis.Build) {
 
 	response := model.InResponse{
-		Metadata: common.GetMetadatasFromBuild(build, commit),
-		Version: model.Version{build.Number},
+		Metadata: common.GetMetadatasFromBuild(*build),
+		Version:  model.Version{fmt.Sprint(*build.Id)},
 	}
 	c.Messager.SendJsonResponse(response)
 }
-func (c *InCommand) GetBuildInfo() (travis.Build, travis.ListBuildsResponse, error) {
-	var build travis.Build
+func (c *InCommand) GetBuildInfo(ctx context.Context) (*travis.Build, error) {
+	var build *travis.Build
 	var err error
-	var listBuild travis.ListBuildsResponse
 
-	builds, jobs, commits, _, err := c.TravisClient.Builds.ListFromRepository(c.Request.Source.Repository, &travis.BuildListOptions{
-		Number: c.Request.Version.BuildNumber,
-	})
+	options := travis.BuildOption{
+		Include: []string{"build.commit"},
+	}
+
+	buildId, _ := strconv.ParseUint(c.Request.Version.BuildId, 10, 32)
+	build, _, err = c.TravisClient.Builds.Find(ctx, uint(buildId), &options)
 	if err != nil {
-		return build, listBuild, err
+		return build, err
 	}
-	if len(builds) == 0 {
-		return build, listBuild, errors.New("this build doesn't exists in travis")
-	}
-	build = builds[0]
-	listBuild = travis.ListBuildsResponse{
-		Builds: builds,
-		Jobs: jobs,
-		Commits: commits,
-	}
-	return build, listBuild, nil
+
+	return build, nil
 }
-func (c *InCommand) WriteInBuildInfoFile(listBuild travis.ListBuildsResponse) error {
+func (c *InCommand) WriteInBuildInfoFile(build *travis.Build) error {
 	fileLocation := filepath.Join(c.DestinationFolder, common.FILENAME_BUILD_INFO)
 	c.Messager.LogItLn("Writing build informations in file '[blue]%s[reset]' ...", common.FILENAME_BUILD_INFO)
 	file, err := os.Create(fileLocation)
@@ -64,16 +60,16 @@ func (c *InCommand) WriteInBuildInfoFile(listBuild travis.ListBuildsResponse) er
 		return err
 	}
 	defer file.Close()
-	listBuildJson, err := json.MarshalIndent(listBuild, "", "\t")
+	buildJson, err := json.MarshalIndent(*build, "", "\t")
 	if err != nil {
 		return err
 	}
-	c.Messager.LogItLn("Build informations wrote: '[blue]%s[reset]'", string(listBuildJson))
-	file.Write(listBuildJson)
+	c.Messager.LogItLn("Build informations wrote: '[blue]%s[reset]'", string(buildJson))
+	file.Write(buildJson)
 	c.Messager.LogItLn("Finished to write in file '[blue]%s[reset]' .\n", fileLocation)
 	return nil
 }
-func (c *InCommand) DownloadLogs(build travis.Build) error {
+func (c *InCommand) DownloadLogs(ctx context.Context, build *travis.Build) error {
 	if !c.Request.InParams.DownloadLogs {
 		return nil
 	}
@@ -83,8 +79,8 @@ func (c *InCommand) DownloadLogs(build travis.Build) error {
 	if err != nil {
 		return err
 	}
-	for _, jobId := range build.JobIds {
-		err = c.downloadLogFromJob(jobId)
+	for _, job := range build.Jobs {
+		err = c.downloadLogFromJob(ctx, *job.Id)
 		if err != nil {
 			return err
 		}
@@ -92,7 +88,7 @@ func (c *InCommand) DownloadLogs(build travis.Build) error {
 	c.Messager.LogItLn("Finished to download logs in folder '[blue]%s[reset]' .\n", LOGS_FOLDER)
 	return nil
 }
-func (c *InCommand) downloadLogFromJob(jobId uint) error {
+func (c *InCommand) downloadLogFromJob(ctx context.Context, jobId uint) error {
 	logLocation := filepath.Join(LOGS_FOLDER, fmt.Sprintf(LOGS_FILENAME_PATTERN, jobId))
 	file, err := os.Create(filepath.Join(c.DestinationFolder, logLocation))
 	if err != nil {
@@ -100,7 +96,7 @@ func (c *InCommand) downloadLogFromJob(jobId uint) error {
 	}
 	defer file.Close()
 	c.Messager.LogItLn("-------\nDownloading log for job '[blue]%d[reset]' as file '[blue]%s[reset]' ...", jobId, logLocation)
-	resp, err := c.TravisClient.Jobs.RawLogOnlyResponse(jobId)
+	_, resp, err := c.TravisClient.Logs.FindByJobId(ctx, jobId)
 	if err != nil {
 		return err
 	}

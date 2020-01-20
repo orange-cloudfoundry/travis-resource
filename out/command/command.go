@@ -1,14 +1,16 @@
 package command
 
 import (
-	"github.com/Orange-OpenSource/travis-resource/common"
-	"github.com/Orange-OpenSource/travis-resource/model"
+	"context"
 	"errors"
-	"github.com/Orange-OpenSource/travis-resource/travis"
-	"github.com/Orange-OpenSource/travis-resource/messager"
-	"time"
 	"fmt"
 	"strconv"
+	"time"
+
+	"github.com/Orange-OpenSource/travis-resource/common"
+	"github.com/Orange-OpenSource/travis-resource/messager"
+	"github.com/Orange-OpenSource/travis-resource/model"
+	"github.com/shuheiktgw/go-travis"
 )
 
 type OutCommand struct {
@@ -34,41 +36,50 @@ func (c *OutCommand) GetBuildParam() string {
 	}
 	return buildParam
 }
-func (c *OutCommand) SendResponse(build travis.Build, commit travis.Commit) {
+func (c *OutCommand) SendResponse(build *travis.Build) {
 	response := model.InResponse{
-		Metadata: common.GetMetadatasFromBuild(build, commit),
-		Version: model.Version{build.Number},
+		Metadata: common.GetMetadatasFromBuild(*build),
+		Version:  model.Version{fmt.Sprint(*build.Id)},
 	}
 	c.Messager.SendJsonResponse(response)
 }
-func (c *OutCommand) Restart(build travis.Build) (travis.Build, error) {
-	c.TravisClient.Builds.Restart(build.Id)
-	c.Messager.LogItLn("Build '%s' on repository '[blue]%s[reset]' restarted, see details here: [blue]%s[reset] .\n", build.Number, c.Repository, c.GetBuildUrl(build))
+func (c *OutCommand) Restart(ctx context.Context, build *travis.Build) (*travis.Build, error) {
+	c.TravisClient.Builds.Restart(ctx, *build.Id)
+	c.Messager.LogItLn("Build '%s' on repository '[blue]%s[reset]' restarted, see details here: [blue]%s[reset] .\n", *build.Id, c.Repository, c.GetBuildUrl(*build.Id))
 	if !c.Request.OutParams.SkipWait {
-		c.waitBuild(build.Number)
+		c.waitBuild(ctx, *build.Id)
 	}
-	return c.TravisClient.Builds.GetFirstBuildFromBuildNumber(c.Repository, build.Number)
+
+	options := travis.BuildOption{
+		Include: []string{"build.commit"},
+	}
+
+	build, _, err := c.TravisClient.Builds.Find(ctx, *build.Id, &options)
+	if err != nil {
+		return build, err
+	}
+	return build, nil
 }
-func (c *OutCommand) waitBuild(buildNumber string) {
-	var build travis.Build
+func (c *OutCommand) waitBuild(ctx context.Context, buildId uint) {
+	var build *travis.Build
 	var err error
 	c.Messager.LogIt("Wait build to finish on travis")
 	for {
-		build, err = c.TravisClient.Builds.GetFirstBuildFromBuildNumber(c.Repository, buildNumber)
+		build, _, err = c.TravisClient.Builds.Find(ctx, buildId, nil)
 		c.Messager.FatalIf("can't get build after restart", err)
-		if !common.StringInSlice(build.State, travis.RUNNING_STATE) {
+		if !common.StringInSlice(*build.State, []string{travis.BuildStateCreated, travis.BuildStateReceived, travis.BuildStateStarted}) {
 			break
 		}
 		c.Messager.LogIt(".")
 		time.Sleep(5 * time.Second)
 	}
-	c.Messager.LogIt(build.State)
-	if build.State != travis.SUCCEEDED_STATE {
-		c.Messager.FatalIf("Build '" + build.Number + "' failed",
-			errors.New("\n\tstate: " + build.State + "\n\tsee: " + c.GetBuildUrl(build)))
+	c.Messager.LogIt(*build.State)
+	if *build.State != travis.BuildStatePassed {
+		c.Messager.FatalIf("Build '"+*build.Number+"' failed",
+			errors.New("\n\tstate: "+*build.State+"\n\tsee: "+c.GetBuildUrl(buildId)))
 	}
 }
-func (c *OutCommand) GetBuildUrl(build travis.Build) string {
+func (c *OutCommand) GetBuildUrl(buildId uint) string {
 	var travisUrl string
 	if c.Request.Source.Url != "" {
 		travisUrl = c.Request.Source.Url
@@ -76,39 +87,71 @@ func (c *OutCommand) GetBuildUrl(build travis.Build) string {
 		travisUrl = common.GetTravisUrl(c.Request.Source.Pro)
 	}
 	travisUrl = common.GetTravisDashboardUrl(travisUrl)
-	return travisUrl + c.Repository + "/builds/" + strconv.Itoa(int(build.Id))
+	return travisUrl + c.Repository + "/builds/" + strconv.Itoa(int(buildId))
 }
 func (c *OutCommand) GetBuildUrlLink(build travis.Build) string {
-	buildUrl := c.GetBuildUrl(build)
+	buildUrl := c.GetBuildUrl(*build.Id)
 	return fmt.Sprintf("<a href=\"%s\">%s</a>", buildUrl, buildUrl)
 }
-func (c *OutCommand) GetBuild(buildParam string) (travis.Build, error) {
-	var build travis.Build
+func (c *OutCommand) GetBuild(ctx context.Context, buildParam string) (*travis.Build, error) {
+	var build *travis.Build
 	var err error
 	if buildParam == "latest" || (c.Request.OutParams.Repository != "" && c.Request.OutParams.Build == "" && c.Request.OutParams.Branch == "") {
-		build, err = c.TravisClient.Builds.GetFirstFinishedBuild(c.Repository)
-		if err != nil {
-			return build, errors.New("can't get build for repository " + c.Repository + " with latest build " + err.Error())
+		options := travis.BuildsByRepoOption{
+			State:   []string{travis.BuildStatePassed, travis.BuildStateFailed, travis.BuildStateErrored, travis.BuildStateCanceled},
+			Include: []string{"build.commit"},
+			Limit:   1,
 		}
-		return build, nil
+
+		builds, _, err := c.TravisClient.Builds.ListByRepoSlug(
+			ctx,
+			c.Request.Source.Repository,
+			&options,
+		)
+
+		if err != nil {
+			return nil, errors.New("can't get build for repository " + c.Repository + " with latest build " + err.Error())
+		}
+		return builds[0], nil
 	} else if buildParam != "" {
-		build, err = c.TravisClient.Builds.GetFirstBuildFromBuildNumber(c.Repository, buildParam)
+		options := travis.BuildOption{
+			Include: []string{"build.commit"},
+		}
+
+		buildId, _ := strconv.ParseUint(buildParam, 10, 32)
+		build, _, err = c.TravisClient.Builds.Find(ctx, uint(buildId), &options)
 		if err != nil {
 			return build, errors.New("can't get build for repository " + c.Repository + " with build " + buildParam + " " + err.Error())
 		}
 		return build, nil
 	} else if c.Request.OutParams.Branch != "" {
-		build, err = c.TravisClient.Builds.GetFirstFinishedBuildWithBranch(c.Repository, c.Request.OutParams.Branch)
-		if err != nil {
-			return build, errors.New("can't get build for repository " + c.Repository + " with branch " + c.Request.OutParams.Branch + " " + err.Error())
+		options := travis.BuildsByRepoOption{
+			State:      []string{travis.BuildStatePassed, travis.BuildStateFailed, travis.BuildStateErrored, travis.BuildStateCanceled},
+			Include:    []string{"build.commit"},
+			Limit:      1,
+			BranchName: []string{c.Request.OutParams.Branch},
 		}
-		return build, nil
+
+		builds, _, err := c.TravisClient.Builds.ListByRepoSlug(
+			ctx,
+			c.Request.Source.Repository,
+			&options,
+		)
+
+		if err != nil {
+			return nil, errors.New("can't get build for repository " + c.Repository + " with latest build " + err.Error())
+		}
+		return builds[0], nil
 	}
-	build, err = c.TravisClient.Builds.GetFirstBuildFromBuildNumber(c.Repository, c.Request.Version.BuildNumber)
+
+	options := travis.BuildOption{
+		Include: []string{"build.commit"},
+	}
+
+	buildId, _ := strconv.ParseUint(buildParam, 10, 32)
+	build, _, err = c.TravisClient.Builds.Find(ctx, uint(buildId), &options)
 	if err != nil {
-		return build, errors.New("can't get build for repository " + c.Repository + " with build " + c.Request.Version.BuildNumber + " " + err.Error())
+		return build, errors.New("can't get build for repository " + c.Repository + " with build " + c.Request.Version.BuildId + " " + err.Error())
 	}
 	return build, nil
-
 }
-
