@@ -1,8 +1,8 @@
 package common_test
 
 import (
-	"github.com/Orange-OpenSource/travis-resource/common"
-	"github.com/Orange-OpenSource/travis-resource/model"
+	"github.com/alphagov/travis-resource/common"
+	"github.com/alphagov/travis-resource/model"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/shuheiktgw/go-travis"

@@ -13,7 +13,7 @@ var checkPath string
 var _ = BeforeSuite(func() {
 	var err error
 
-	checkPath, err = gexec.Build("github.com/Orange-OpenSource/travis-resource/check")
+	checkPath, err = gexec.Build("github.com/alphagov/travis-resource/check")
 	Expect(err).NotTo(HaveOccurred())
 })
 

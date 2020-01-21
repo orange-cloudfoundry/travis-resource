@@ -1,7 +1,7 @@
 package messager_test
 
 import (
-	. "github.com/Orange-OpenSource/travis-resource/messager"
+	. "github.com/alphagov/travis-resource/messager"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

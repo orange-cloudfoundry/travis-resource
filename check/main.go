@@ -6,10 +6,10 @@ import (
 	"errors"
 	"os"
 
-	. "github.com/Orange-OpenSource/travis-resource/check/command"
-	"github.com/Orange-OpenSource/travis-resource/common"
-	"github.com/Orange-OpenSource/travis-resource/messager"
-	"github.com/Orange-OpenSource/travis-resource/model"
+	. "github.com/alphagov/travis-resource/check/command"
+	"github.com/alphagov/travis-resource/common"
+	"github.com/alphagov/travis-resource/messager"
+	"github.com/alphagov/travis-resource/model"
 )
 
 func main() {

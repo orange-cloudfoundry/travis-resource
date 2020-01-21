@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/Orange-OpenSource/travis-resource/messager"
-	"github.com/Orange-OpenSource/travis-resource/model"
+	"github.com/alphagov/travis-resource/messager"
+	"github.com/alphagov/travis-resource/model"
 	"github.com/shuheiktgw/go-travis"
 )
 

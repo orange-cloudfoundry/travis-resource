@@ -9,9 +9,9 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"github.com/Orange-OpenSource/travis-resource/common"
-	"github.com/Orange-OpenSource/travis-resource/messager"
-	"github.com/Orange-OpenSource/travis-resource/model"
+	"github.com/alphagov/travis-resource/common"
+	"github.com/alphagov/travis-resource/messager"
+	"github.com/alphagov/travis-resource/model"
 	"github.com/cheggaaa/pb"
 	"github.com/shuheiktgw/go-travis"
 )

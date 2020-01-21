@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Orange-OpenSource/travis-resource/model"
+	"github.com/alphagov/travis-resource/model"
 	"github.com/shuheiktgw/go-travis"
 )
 
